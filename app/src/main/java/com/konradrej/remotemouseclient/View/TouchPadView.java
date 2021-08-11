@@ -1,8 +1,7 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.remotemouseclient.View;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,8 +16,8 @@ public class TouchPadView extends View implements
 
     private OnTouchListener wrappedOnTouchListener = null;
     private OnTouchPadEventListener onTouchPadEventListener = null;
-    private int touchAmount = 0;
     private GestureDetectorCompat gestureDetector;
+    private int touchAmount = 0;
 
     public TouchPadView(Context context) {
         super(context);
@@ -54,10 +53,6 @@ public class TouchPadView extends View implements
         onTouchPadEventListener = listener;
     }
 
-
-
-
-
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
         if(onTouchPadEventListener != null)
@@ -75,27 +70,6 @@ public class TouchPadView extends View implements
     }
 
     @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return true;
-
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        Log.d("DEBUG_TAG","onDown: " + e.toString());
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return true;
-    }
-
-    @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if(onTouchPadEventListener != null){
             if(touchAmount == 1){
@@ -109,19 +83,9 @@ public class TouchPadView extends View implements
     }
 
     @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return true;
-    }
-
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
-        boolean consumed = false;
         touchAmount = event.getPointerCount();
+        boolean consumed = false;
 
         if(wrappedOnTouchListener != null)
             consumed |= wrappedOnTouchListener.onTouch(v, event);
@@ -132,12 +96,54 @@ public class TouchPadView extends View implements
     }
 
     public interface OnTouchPadEventListener {
-        public void onMove(float distanceX, float distanceY);
+        void onMove(float distanceX, float distanceY);
 
-        public void onScroll(float distanceX, float distanceY);
+        void onScroll(float distanceX, float distanceY);
 
-        public void onLeftClick();
+        void onLeftClick();
 
-        public void onRightClick();
+        void onRightClick();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return true;
     }
 }

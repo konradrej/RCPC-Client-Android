@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.konradrej.remotemouseclient.View.TouchPadView;
 import com.konradrej.remotemouseclient.databinding.FragmentTouchPadBinding;
 
 /**
