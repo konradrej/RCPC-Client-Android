@@ -1,0 +1,11 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<resources>
+    <color name="tory_blue">#0d47a1</color>
+    <color name="indigo">#5472d3</color>
+    <color name="midnight_blue">#002171</color>
+    <color name="sea_green">#2e7d32</color>
+    <color name="fern">#60ad5e</color>
+    <color name="crusoe">#005005</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+</resources>

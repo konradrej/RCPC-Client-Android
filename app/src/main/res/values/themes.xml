@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.RemoteMouseClient" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/tory_blue</item>
+        <item name="colorPrimaryVariant">@color/indigo</item>
+        <item name="colorPrimaryDark">@color/midnight_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/sea_green</item>
+        <item name="colorSecondaryVariant">@color/fern</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="tabStyle">@style/Widget.MaterialComponents.TabLayout.Colored</item>
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+</resources>
