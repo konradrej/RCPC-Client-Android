@@ -39,23 +39,23 @@ public class TouchPadView extends View implements
         init();
     }
 
-    public void init(){
+    public void init() {
         gestureDetector = new GestureDetectorCompat(getContext(), this);
         super.setOnTouchListener(this);
     }
 
     @Override
-    public void setOnTouchListener(OnTouchListener listener){
+    public void setOnTouchListener(OnTouchListener listener) {
         wrappedOnTouchListener = listener;
     }
 
-    public void setOnTouchPadEventListener(OnTouchPadEventListener listener){
+    public void setOnTouchPadEventListener(OnTouchPadEventListener listener) {
         onTouchPadEventListener = listener;
     }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        if(onTouchPadEventListener != null)
+        if (onTouchPadEventListener != null)
             onTouchPadEventListener.onLeftClick();
 
         return true;
@@ -63,7 +63,7 @@ public class TouchPadView extends View implements
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        if(onTouchPadEventListener != null)
+        if (onTouchPadEventListener != null)
             onTouchPadEventListener.onRightClick();
 
         return true;
@@ -71,10 +71,10 @@ public class TouchPadView extends View implements
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if(onTouchPadEventListener != null){
-            if(touchAmount == 1){
+        if (onTouchPadEventListener != null) {
+            if (touchAmount == 1) {
                 onTouchPadEventListener.onMove(distanceX, distanceY);
-            }else if(touchAmount == 2){
+            } else if (touchAmount == 2) {
                 onTouchPadEventListener.onScroll(distanceX, distanceY);
             }
         }
@@ -87,7 +87,7 @@ public class TouchPadView extends View implements
         touchAmount = event.getPointerCount();
         boolean consumed = false;
 
-        if(wrappedOnTouchListener != null)
+        if (wrappedOnTouchListener != null)
             consumed |= wrappedOnTouchListener.onTouch(v, event);
 
         consumed |= gestureDetector.onTouchEvent(event);
@@ -104,18 +104,6 @@ public class TouchPadView extends View implements
 
         void onRightClick();
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
