@@ -1,89 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".TouchPadFragment">
 
     <LinearLayout
+        android:id="@+id/touchContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="192dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="15"
+        android:layoutDirection="inherit"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
+        <com.konradrej.remotemouseclient.View.TouchPadView
+            android:id="@+id/touchPadArea"
             android:layout_width="match_parent"
-            android:layout_height="192dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="15"
-            android:orientation="horizontal">
-
-            <com.konradrej.remotemouseclient.View.TouchPadView
-                android:id="@+id/touchPadArea"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?colorPrimaryVariant" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0" />
-
-            <View
-                android:id="@+id/scrollBarArea"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="7"
-                android:background="?colorPrimaryVariant" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:background="?colorPrimaryVariant" />
 
-            <Button
-                android:id="@+id/leftButtonArea"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="6"
-                android:background="?colorSecondaryVariant" />
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0" />
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0" />
-
-            <Button
-                android:id="@+id/middleButtonArea"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?colorSecondaryVariant" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0" />
-
-            <Button
-                android:id="@+id/rightButtonArea"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="6"
-                android:background="?colorSecondaryVariant" />
-        </LinearLayout>
-
+        <com.konradrej.remotemouseclient.View.ScrollBarView
+            android:id="@+id/scrollBarArea"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="7"
+            android:background="?colorPrimaryVariant" />
     </LinearLayout>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:layoutDirection="ltr"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/leftButtonArea"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:background="?colorSecondaryVariant" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0" />
+
+        <Button
+            android:id="@+id/middleButtonArea"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?colorSecondaryVariant" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0" />
+
+        <Button
+            android:id="@+id/rightButtonArea"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:background="?colorSecondaryVariant" />
+    </LinearLayout>
+
+</LinearLayout>
