@@ -1,14 +1,13 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.rcpc;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
-import com.google.android.material.appbar.MaterialToolbar;
-import com.konradrej.remotemouseclient.databinding.ActivityServerSelectBinding;
+import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
 public class ServerSelectActivity extends AppCompatActivity {
 

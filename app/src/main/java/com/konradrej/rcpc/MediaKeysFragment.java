@@ -1,4 +1,4 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.rcpc;
 
 import android.os.Bundle;
 
@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.transition.MaterialSharedAxis;
-import com.konradrej.remotemouseclient.databinding.FragmentMediaKeysBinding;
+import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 
 /**
  * A simple {@link Fragment} subclass.

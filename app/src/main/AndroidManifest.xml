@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.konradrej.remotemouseclient">
+    package="com.konradrej.rcpc">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
@@ -11,10 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RemoteMouseClient">
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.konradrej.rcpc.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".RemoteControlActivity" />
-        <activity android:name=".ServerSelectActivity">
+        <activity android:name="com.konradrej.rcpc.RemoteControlActivity" />
+        <activity android:name="com.konradrej.rcpc.ServerSelectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

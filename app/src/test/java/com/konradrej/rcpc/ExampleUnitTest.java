@@ -1,4 +1,4 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.rcpc;
 
 import org.junit.Test;
 

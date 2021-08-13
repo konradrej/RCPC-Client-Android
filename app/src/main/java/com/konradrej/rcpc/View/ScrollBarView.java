@@ -1,4 +1,4 @@
-package com.konradrej.remotemouseclient.View;
+package com.konradrej.rcpc.View;
 
 import android.content.Context;
 import android.util.AttributeSet;

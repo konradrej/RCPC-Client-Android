@@ -1,22 +1,20 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.rcpc;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
-import android.text.method.Touch;
-import android.util.Log;
 import android.view.View;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
-import com.konradrej.remotemouseclient.databinding.ActivityRemoteControlBinding;
+import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.databinding.ActivityRemoteControlBinding;
 
 public class RemoteControlActivity extends AppCompatActivity {
 
     private ActivityRemoteControlBinding binding;
     private Thread thread;
+    private Fragment[] fragments = new Fragment[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +22,13 @@ public class RemoteControlActivity extends AppCompatActivity {
         binding = ActivityRemoteControlBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        ConnectionHandler connectionHandler = new ConnectionHandler();
+        TouchPadFragment touchPadFragment = TouchPadFragment.newInstance();
+        touchPadFragment.setConnectionHandler(connectionHandler);
+
+        fragments[0] = touchPadFragment;
+        fragments[1] = MediaKeysFragment.newInstance();
 
         binding.topAppBar.setNavigationOnClickListener((event) -> {
             finish();
@@ -33,14 +38,8 @@ public class RemoteControlActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 // Handle tab select
-                switch (binding.tabLayout.getSelectedTabPosition()){
-                    case 0:
-                        setFragment(TouchPadFragment.newInstance());
-                        break;
-                    case 1:
-                        setFragment(MediaKeysFragment.newInstance());
-                        break;
-                }
+                setFragment(fragments[binding.tabLayout.getSelectedTabPosition()]);
+
             }
 
             @Override
@@ -54,10 +53,11 @@ public class RemoteControlActivity extends AppCompatActivity {
             }
         });
 
-        setFragment(new TouchPadFragment());
 
-        thread = new Thread(new ConnectionHandler());
+        thread = new Thread(connectionHandler);
         thread.start();
+
+        setFragment(fragments[0]);
     }
 
     private void setFragment(Fragment fragment){

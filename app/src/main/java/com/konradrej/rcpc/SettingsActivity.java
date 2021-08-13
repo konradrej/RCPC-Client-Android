@@ -1,14 +1,13 @@
-package com.konradrej.remotemouseclient;
+package com.konradrej.rcpc;
 
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.google.android.material.appbar.MaterialToolbar;
-import com.konradrej.remotemouseclient.databinding.ActivitySettingsBinding;
+import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {
 
