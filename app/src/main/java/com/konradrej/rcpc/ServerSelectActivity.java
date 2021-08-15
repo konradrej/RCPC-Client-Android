@@ -120,6 +120,16 @@ public class ServerSelectActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Removes itself as callback for SocketHandler.
+     */
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        socketHandler.removeCallback(networkEventListener);
+    }
+
     private void connectToServer(String ip) {
         binding.connectionStatusIndicator.show();
 
