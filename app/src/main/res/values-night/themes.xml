@@ -5,7 +5,7 @@
         <item name="colorPrimary">@color/tory_blue</item>
         <item name="colorPrimaryVariant">@color/indigo</item>
         <item name="colorPrimaryDark">@color/midnight_blue</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/sea_green</item>
         <item name="colorSecondaryVariant">@color/crusoe</item>
