@@ -1,27 +1,47 @@
 <resources>
+    <!-- General -->
     <string name="app_name">RCPC Client</string>
-    <string name="start_page_title">RCPC Client</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="general_header">General</string>
+    <string name="touchpad_layout_header">Touchpad Layout</string>
+
+    <string name="connection_history_entries_amount_title">Connection history entries amount</string>
+    <string name="flip_touchpad_buttons_summary_off">Primary button is on the left side of the screen</string>
+    <string name="flip_touchpad_buttons_summary_on">Primary button is on the right side of the screen</string>
+    <string name="flip_touchpad_buttons_title">Flip Touchpad buttons</string>
+
+
+    <!-- Server Select -->
+    <string name="server_select_title">@string/app_name</string>
     <string name="settings">Settings</string>
     <string name="content_description_settings">Open settings</string>
+    <string name="connect_button">Connect</string>
+    <string name="connection_history_title">Connection history</string>
+    <string name="address_input_hint">IP-Address</string>
+    <string name="address_input_error">Incorrect IP address.</string>
+    <string name="connection_history_address_label">Address: %1$s</string>
+    <string name="connection_history_date_label">Date: %1$s</string>
+
+    <!-- Remote Control -->
+    <string name="remote_control_title">%1$s [Connected]</string>
     <string name="tab_touchpad">Touchpad</string>
-    <string name="tab_media_keys">Media keys</string>
     <string name="tab_touchpad_content_description">Access touchpad</string>
+    <string name="tab_media_keys">Media keys</string>
     <string name="tab_media_keys_content_description">Access media keys</string>
-    <string name="title_activity_settings">SettingsActivity</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <!-- Fragment: MediaKeys -->
+    <string name="media_stop_label">Stop</string>
+    <string name="media_pause_label">Pause</string>
+    <string name="media_play_label">Play</string>
+    <string name="media_previous_label">Previous</string>
+    <string name="media_next_label">Next</string>
+    <string name="volume_label">Volume</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="touchpad_layout_header">Touchpad Layout</string>
+    <!-- Dialogs -->
+    <string name="neutral_response_ok">OK</string>
+    <string name="could_not_connect_title">Could not connect</string>
+    <string name="could_not_connect_body">The IP address could not be reached, make sure the server is started and that the IP address is correct</string>
+    <string name="an_error_occurred_title">An error occurred</string>
 </resources>

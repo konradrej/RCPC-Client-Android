@@ -1,6 +1,7 @@
 package com.konradrej.rcpc;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,10 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            androidx.preference.EditTextPreference editTextPreference = getPreferenceManager().findPreference("connection_history_entries_amount");
+            if (editTextPreference != null)
+                editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED));
         }
     }
 }

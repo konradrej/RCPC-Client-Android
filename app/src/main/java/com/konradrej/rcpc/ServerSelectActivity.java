@@ -1,6 +1,7 @@
 package com.konradrej.rcpc;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -27,6 +29,7 @@ public class ServerSelectActivity extends AppCompatActivity {
 
     private ActivityServerSelectBinding binding;
     private final SocketHandler socketHandler = SocketHandler.getInstance();
+    private SharedPreferences sharedPreferences;
     private View view;
     private AppDatabase db;
 
@@ -40,10 +43,7 @@ public class ServerSelectActivity extends AppCompatActivity {
                 binding.connectionStatusIndicator.hide();
             });
 
-            Intent intent = new Intent(getApplicationContext(), RemoteControlActivity.class);
-            intent.putExtra("title", "[Connected]");
-
-            startActivity(intent);
+            startActivity(new Intent(getApplicationContext(), RemoteControlActivity.class));
         }
 
         @Override
@@ -57,10 +57,10 @@ public class ServerSelectActivity extends AppCompatActivity {
 
                 MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(view.getContext());
 
-                dialogBuilder.setTitle("Could not connect")
-                        .setMessage("The IP address could not be reached, make sure the server is started and that the IP address is correct")
-                        .setNeutralButton("Ok", (dialog, event) -> {
-                            Log.d("DEBUG", "Fate accepted :(");
+                dialogBuilder.setTitle(getString(R.string.could_not_connect_title))
+                        .setMessage(getString(R.string.could_not_connect_body))
+                        .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
+                            // TODO
                         })
                         .show();
 
@@ -73,9 +73,9 @@ public class ServerSelectActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(view.getContext());
 
-                dialogBuilder.setTitle("An error occurred")
+                dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
                         .setMessage(e.getLocalizedMessage())
-                        .setNeutralButton("Ok", (dialog, event) -> {
+                        .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
                         })
                         .show();
             });
@@ -91,6 +91,7 @@ public class ServerSelectActivity extends AppCompatActivity {
 
         // getApplicationContext().deleteDatabase("RCPCStorage");
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         populateConnectionHistory();
 
         binding.topAppBar.setOnMenuItemClickListener((menuItem) -> {
@@ -106,7 +107,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             if (ipAddressEditable != null && Patterns.IP_ADDRESS.matcher(ipAddressEditable.toString()).matches()) {
                 connectToServer(ipAddressEditable.toString());
             } else {
-                binding.outlinedIpField.setError("Incorrect IP address.");
+                binding.outlinedIpField.setError(getString(R.string.address_input_error));
             }
         });
     }
@@ -134,7 +135,9 @@ public class ServerSelectActivity extends AppCompatActivity {
     private void populateConnectionHistory() {
         new Thread(() -> {
             ConnectionDAO connectionDAO = db.connectionDAO();
-            List<Connection> connections = connectionDAO.getLimitedAmount(15);
+
+            int entriesAmount = Integer.parseInt(sharedPreferences.getString("connection_history_entries_amount", "15"));
+            List<Connection> connections = connectionDAO.getLimitedAmount(entriesAmount);
 
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -142,10 +145,12 @@ public class ServerSelectActivity extends AppCompatActivity {
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);
-                addressView.setText("Address: " + connection.getIp());
+                addressView.setText(String.format(getString(R.string.connection_history_address_label), connection.getIp()));
 
+                // TODO: Maybe different datetime formatting
+                String dateTime = DateFormat.getDateTimeInstance().format(connection.getConnectTimestamp());
                 TextView dateView = childLayout.findViewById(R.id.dateView);
-                dateView.setText("Date: " + DateFormat.getDateTimeInstance().format(connection.getConnectTimestamp()));
+                dateView.setText(String.format(getString(R.string.connection_history_date_label), dateTime));
 
                 Button connectButton = childLayout.findViewById(R.id.connectButton);
                 connectButton.setOnClickListener((event) -> {

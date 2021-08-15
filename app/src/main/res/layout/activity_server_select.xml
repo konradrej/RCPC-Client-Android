@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:menu="@menu/top_app_bar"
-                app:title="@string/start_page_title" />
+                app:title="@string/server_select_title" />
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/connectionStatusIndicator"
@@ -62,7 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="IP-Address"
+                        android:hint="@string/address_input_hint"
                         app:errorEnabled="true">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -82,18 +82,17 @@
                         android:id="@+id/connectButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Connect" />
+                        android:text="@string/connect_button" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Connection history"
+                    android:text="@string/connection_history_title"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
                 <View
-                    android:id="@+id/divider2"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="4dp"

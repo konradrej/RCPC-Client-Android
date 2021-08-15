@@ -10,9 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RemoteMouseClient">
-        <activity
-            android:name="com.konradrej.rcpc.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+        <activity android:name="com.konradrej.rcpc.SettingsActivity" />
         <activity android:name="com.konradrej.rcpc.RemoteControlActivity" />
         <activity android:name="com.konradrej.rcpc.ServerSelectActivity">
             <intent-filter>

@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Stop"
+                android:text="@string/media_stop_label"
                 app:icon="@drawable/ic_stop_24" />
 
             <Space
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Pause"
+                android:text="@string/media_pause_label"
                 app:icon="@drawable/ic_pause_24" />
 
             <Space
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Play"
+                android:text="@string/media_play_label"
                 app:icon="@drawable/ic_play_arrow_24" />
         </LinearLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Previous"
+                android:text="@string/media_previous_label"
                 app:icon="@drawable/ic_skip_previous_24" />
 
             <Space
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Next"
+                android:text="@string/media_next_label"
                 app:icon="@drawable/ic_skip_next_24" />
 
         </LinearLayout>
@@ -91,7 +91,7 @@
                 android:id="@+id/volumeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Volume"
+                android:text="@string/volume_label"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

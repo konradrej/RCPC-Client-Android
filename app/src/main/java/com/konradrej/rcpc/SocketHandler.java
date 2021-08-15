@@ -18,8 +18,6 @@ public class SocketHandler implements Runnable {
     private static SocketHandler singleInstance = null;
     private final Set<onNetworkEventListener> onNetworkEventListeners = new HashSet<>();
 
-    private final String DEBUG_TAG = "ConnectionHandler";
-
     private final Deque<String> messageQueue = new ArrayDeque<>();
     private boolean disconnect = false;
     private String ip = null;
@@ -89,13 +87,9 @@ public class SocketHandler implements Runnable {
             for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
                 onNetworkEventListener.onDisconnect();
         } catch (SocketTimeoutException e) {
-            Log.e(DEBUG_TAG, "Socket timeout.");
-
             for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
                 onNetworkEventListener.onConnectTimeout();
         } catch (IOException e) {
-            Log.e(DEBUG_TAG, "RIP");
-
             for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
                 onNetworkEventListener.onError(e);
         }
