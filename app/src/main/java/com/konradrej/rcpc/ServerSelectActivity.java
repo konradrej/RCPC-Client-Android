@@ -44,6 +44,7 @@ public class ServerSelectActivity extends AppCompatActivity {
                             binding.connectionStatusIndicator.hide());
 
                     startActivity(new Intent(getApplicationContext(), RemoteControlActivity.class));
+                    finish();
                 }
 
                 @Override

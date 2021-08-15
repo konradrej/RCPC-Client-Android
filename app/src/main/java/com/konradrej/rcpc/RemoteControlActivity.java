@@ -1,5 +1,6 @@
 package com.konradrej.rcpc;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -107,6 +108,7 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     private void endRemoteControl() {
         socketHandler.disconnect();
+        startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
         finish();
     }
 

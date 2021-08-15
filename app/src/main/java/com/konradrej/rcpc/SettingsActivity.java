@@ -1,9 +1,11 @@
 package com.konradrej.rcpc;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -26,8 +28,16 @@ public class SettingsActivity extends AppCompatActivity {
                     .commit();
         }
 
-        binding.topAppBar.setNavigationOnClickListener((event) ->
-                finish());
+        binding.topAppBar.setNavigationOnClickListener((event) -> {
+            endSettings();
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                endSettings();
+            }
+        });
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -41,8 +51,13 @@ public class SettingsActivity extends AppCompatActivity {
                 editTextPreference.setOnBindEditTextListener((editText) ->
                         editText.setInputType(
                                 InputType.TYPE_CLASS_NUMBER |
-                                InputType.TYPE_NUMBER_FLAG_SIGNED
+                                        InputType.TYPE_NUMBER_FLAG_SIGNED
                         ));
         }
+    }
+
+    private void endSettings() {
+        startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
+        finish();
     }
 }
