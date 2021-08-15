@@ -146,15 +146,15 @@ Project Link: [https://github.com/konradrej/RCPC](https://github.com/konradrej/R
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/konradrej/repo.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/konradrej/RCPC.svg?style=for-the-badge
 [contributors-url]: https://github.com/konradrej/RCPC/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/konradrej/repo.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/konradrej/RCPC.svg?style=for-the-badge
 [forks-url]: https://github.com/konradrej/RCPC/network/members
-[stars-shield]: https://img.shields.io/github/stars/konradrej/repo.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/konradrej/RCPC.svg?style=for-the-badge
 [stars-url]: https://github.com/konradrej/RCPC/stargazers
-[issues-shield]: https://img.shields.io/github/issues/konradrej/repo.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/konradrej/RCPC.svg?style=for-the-badge
 [issues-url]: https://github.com/konradrej/RCPC/issues
-[license-shield]: https://img.shields.io/github/license/konradrej/repo.svg?style=for-the-badge
-[license-url]: https://github.com/konradrej/RCPC/blob/master/LICENSE.txt
+[license-shield]: https://img.shields.io/github/license/konradrej/RCPC.svg?style=for-the-badge
+[license-url]: https://github.com/konradrej/RCPC/blob/master/LICENSE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/konrad-rej/
