@@ -16,7 +16,11 @@ import com.konradrej.rcpc.View.TouchPadView;
 import com.konradrej.rcpc.databinding.FragmentTouchPadBinding;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Represents a {@link Fragment} containing a touchpad and relevant controls.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
  */
 public class TouchPadFragment extends Fragment {
 
@@ -24,12 +28,22 @@ public class TouchPadFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private SocketHandler socketHandler;
 
+    /**
+     * Required empty constructor
+     */
     public TouchPadFragment() {
     }
 
+    /**
+     * Setups the fragments transitions.
+     *
+     * @param savedInstanceState saved bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
         Transition enterTransition = new MaterialSharedAxis(MaterialSharedAxis.X, false);
         Transition exitTransition = new MaterialSharedAxis(MaterialSharedAxis.X, true);
@@ -38,17 +52,29 @@ public class TouchPadFragment extends Fragment {
         setExitTransition(exitTransition);
     }
 
+    /**
+     * Sets socketHandler.
+     *
+     * @param socketHandler the handler to set
+     */
     public void setConnectionHandler(SocketHandler socketHandler) {
         this.socketHandler = socketHandler;
     }
 
+    /**
+     * Setups the fragments view and interaction.
+     *
+     * @param inflater           inflater to use
+     * @param container          view container
+     * @param savedInstanceState saved bundle
+     * @return the newly setup view
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentTouchPadBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
         if (sharedPreferences.getBoolean("flip_touchpad_buttons", false)) {
             binding.buttonContainer.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -61,11 +87,13 @@ public class TouchPadFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Resets binding on view destroy.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        sharedPreferences = null;
     }
 
     private void setupTouchPad() {

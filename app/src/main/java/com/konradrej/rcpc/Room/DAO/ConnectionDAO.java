@@ -8,6 +8,13 @@ import com.konradrej.rcpc.Room.Entity.Connection;
 
 import java.util.List;
 
+/**
+ * Represents a connection entity data access object.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
+ */
 @Dao
 public interface ConnectionDAO {
 

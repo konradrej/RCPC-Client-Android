@@ -25,6 +25,13 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.List;
 
+/**
+ * Represents the server selection activity.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
+ */
 public class ServerSelectActivity extends AppCompatActivity {
 
     private ActivityServerSelectBinding binding;
@@ -71,6 +78,11 @@ public class ServerSelectActivity extends AppCompatActivity {
                 }
             };
 
+    /**
+     * Setups the activities view and interaction.
+     *
+     * @param savedInstanceState saved bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

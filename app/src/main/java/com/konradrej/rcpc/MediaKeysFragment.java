@@ -13,16 +13,28 @@ import com.google.android.material.transition.MaterialSharedAxis;
 import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Represents a {@link Fragment} containing a media keys.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
  */
 public class MediaKeysFragment extends Fragment {
 
     private FragmentMediaKeysBinding binding;
     private SocketHandler socketHandler;
 
+    /**
+     * Required empty constructor
+     */
     public MediaKeysFragment() {
     }
 
+    /**
+     * Setups the fragments transitions.
+     *
+     * @param savedInstanceState saved bundle
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,10 +46,23 @@ public class MediaKeysFragment extends Fragment {
         setExitTransition(exitTransition);
     }
 
+    /**
+     * Sets socketHandler.
+     *
+     * @param socketHandler the handler to set
+     */
     public void setConnectionHandler(SocketHandler socketHandler) {
         this.socketHandler = socketHandler;
     }
 
+    /**
+     * Setups the fragments view and interaction.
+     *
+     * @param inflater           inflater to use
+     * @param container          view container
+     * @param savedInstanceState saved bundle
+     * @return the newly setup view
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +76,9 @@ public class MediaKeysFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Resets binding on view destroy.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -17,6 +17,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the remote control activity.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
+ */
 public class RemoteControlActivity extends AppCompatActivity {
 
     private ActivityRemoteControlBinding binding;
@@ -25,6 +32,11 @@ public class RemoteControlActivity extends AppCompatActivity {
     private final List<Fragment> fragments = new ArrayList<>();
     private final SocketHandler socketHandler = SocketHandler.getInstance();
 
+    /**
+     * Setups the activities view and interaction.
+     *
+     * @param savedInstanceState saved bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +61,11 @@ public class RemoteControlActivity extends AppCompatActivity {
         setupNavigation();
     }
 
+    /**
+     * Saves the current instances state to bundle.
+     *
+     * @param savedInstanceState bundle to save to
+     */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("fragmentIndex", binding.tabLayout.getSelectedTabPosition());

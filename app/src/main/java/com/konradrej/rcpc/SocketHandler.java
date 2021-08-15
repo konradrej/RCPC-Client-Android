@@ -11,6 +11,13 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Handles communication to server.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
+ */
 public class SocketHandler implements Runnable {
 
     private static SocketHandler singleInstance = null;
@@ -23,14 +30,28 @@ public class SocketHandler implements Runnable {
     private SocketHandler() {
     }
 
+    /**
+     * Disconnects connection to server.
+     */
     public void disconnect() {
         disconnect = true;
     }
 
+    /**
+     * Adds message to messageQueue to be sent to server.
+     *
+     * @param message message to send
+     */
     public synchronized void sendMessage(String message) {
         messageQueue.add(message);
     }
 
+    /**
+     * Creates an instance of singleton SocketHandler
+     * if it does not exist yet and returns it.
+     *
+     * @return singleton instance of SocketHandler
+     */
     public static SocketHandler getInstance() {
         if (singleInstance == null) {
             singleInstance = new SocketHandler();
@@ -39,22 +60,45 @@ public class SocketHandler implements Runnable {
         return singleInstance;
     }
 
+    /**
+     * Sets IP.
+     *
+     * @param ip new IP
+     */
     public void setIP(String ip) {
         this.ip = ip;
     }
 
+    /**
+     * Adds onNetworkEventListener callback.
+     *
+     * @param onNetworkEventListener instance of onNetworkEventListener to add
+     */
     public void addCallback(onNetworkEventListener onNetworkEventListener) {
         this.onNetworkEventListeners.add(onNetworkEventListener);
     }
 
+    /**
+     * Removes onNetworkEventListener callback.
+     *
+     * @param onNetworkEventListener instance of onNetworkEventListener to remove
+     */
     public void removeCallback(onNetworkEventListener onNetworkEventListener) {
         this.onNetworkEventListeners.remove(onNetworkEventListener);
     }
 
+    /**
+     * Get IP.
+     *
+     * @return last set IP
+     */
     public String getIP() {
         return ip;
     }
 
+    /**
+     * Setups and handles socket status and data sending.
+     */
     @Override
     public void run() {
         Socket socket = new Socket();
@@ -88,7 +132,7 @@ public class SocketHandler implements Runnable {
         }
     }
 
-    public void notifyListener(NetworkEvent event, IOException errorException) {
+    private void notifyListener(NetworkEvent event, IOException errorException) {
         for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners) {
             switch (event) {
                 case CONNECT:
@@ -114,6 +158,9 @@ public class SocketHandler implements Runnable {
         ERROR
     }
 
+    /**
+     * Callback interface for network events.
+     */
     public interface onNetworkEventListener {
         void onConnect();
 

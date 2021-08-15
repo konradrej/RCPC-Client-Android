@@ -11,8 +11,20 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.konradrej.rcpc.databinding.ActivitySettingsBinding;
 
+/**
+ * Represents the settings activity.
+ *
+ * @author Konrad Rej
+ * @author www.konradrej.com
+ * @version 1.0
+ */
 public class SettingsActivity extends AppCompatActivity {
 
+    /**
+     * Setups the activities view and interaction.
+     *
+     * @param savedInstanceState saved bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +52,9 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates and setups preferences from file,
+     */
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
