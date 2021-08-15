@@ -28,12 +28,12 @@ import java.util.List;
 public class ServerSelectActivity extends AppCompatActivity {
 
     private ActivityServerSelectBinding binding;
+    private View view;
+
     private final SocketHandler socketHandler = SocketHandler.getInstance();
     private SharedPreferences sharedPreferences;
-    private View view;
     private AppDatabase db;
 
-    // TODO Possibly separate into individual listeners instead of multiple in one
     private final SocketHandler.onNetworkEventListener networkEventListener =
             new SocketHandler.onNetworkEventListener() {
                 @Override
@@ -60,27 +60,13 @@ public class ServerSelectActivity extends AppCompatActivity {
 
                         dialogBuilder.setTitle(getString(R.string.could_not_connect_title))
                                 .setMessage(getString(R.string.could_not_connect_body))
-                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
-                                    // TODO
-                                })
+                                .setNeutralButton(getString(R.string.neutral_response_ok), null)
                                 .show();
-
-                        // TODO move into RemoteControlActivity
                     });
                 }
 
                 @Override
                 public void onError(IOException e) {
-                    runOnUiThread(() -> {
-                        MaterialAlertDialogBuilder dialogBuilder =
-                                new MaterialAlertDialogBuilder(view.getContext());
-
-                        dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
-                                .setMessage(e.getLocalizedMessage())
-                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
-                                })
-                                .show();
-                    });
                 }
             };
 
@@ -134,8 +120,8 @@ public class ServerSelectActivity extends AppCompatActivity {
             ConnectionDAO connectionDAO = db.connectionDAO();
 
             Connection connection = new Connection();
-            connection.setIp(socketHandler.getIP());
-            connection.setConnectTimestamp(System.currentTimeMillis());
+            connection.ip = socketHandler.getIP();
+            connection.connectTimestamp = System.currentTimeMillis();
 
             connectionDAO.insert(connection);
         }).start();
@@ -155,16 +141,15 @@ public class ServerSelectActivity extends AppCompatActivity {
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);
-                addressView.setText(String.format(getString(R.string.connection_history_address_label), connection.getIp()));
+                addressView.setText(String.format(getString(R.string.connection_history_address_label), connection.ip));
 
-                // TODO: Maybe different datetime formatting
-                String dateTime = DateFormat.getDateTimeInstance().format(connection.getConnectTimestamp());
+                String dateTime = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT).format(connection.connectTimestamp);
                 TextView dateView = childLayout.findViewById(R.id.dateView);
                 dateView.setText(String.format(getString(R.string.connection_history_date_label), dateTime));
 
                 Button connectButton = childLayout.findViewById(R.id.connectButton);
                 connectButton.setOnClickListener((event) ->
-                        connectToServer(connection.getIp()));
+                        connectToServer(connection.ip));
 
                 runOnUiThread(() ->
                         binding.connectionHistoryContainer.addView(childLayout));

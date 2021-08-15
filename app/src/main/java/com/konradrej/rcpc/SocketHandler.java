@@ -47,6 +47,10 @@ public class SocketHandler implements Runnable {
         this.onNetworkEventListeners.add(onNetworkEventListener);
     }
 
+    public void removeCallback(onNetworkEventListener onNetworkEventListener) {
+        this.onNetworkEventListeners.remove(onNetworkEventListener);
+    }
+
     public String getIP() {
         return ip;
     }
