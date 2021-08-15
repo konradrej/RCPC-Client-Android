@@ -1,6 +1,7 @@
 package com.konradrej.rcpc;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -32,6 +33,16 @@ public class RemoteControlActivity extends AppCompatActivity {
         setContentView(view);
 
         binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), socketHandler.getIP()));
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            for(int i = 0, tabCount = binding.tabLayout.getTabCount(); i < tabCount; i++){
+                TabLayout.Tab tab = binding.tabLayout.getTabAt(i);
+
+                if(tab != null){
+                    tab.setIcon(null);
+                }
+            }
+        }
 
         setupFragments();
         setupErrorHandling();
