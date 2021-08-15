@@ -6,7 +6,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {

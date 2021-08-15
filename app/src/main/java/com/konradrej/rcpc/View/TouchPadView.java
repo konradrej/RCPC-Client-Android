@@ -63,8 +63,9 @@ public class TouchPadView extends View implements
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        if (onTouchPadEventListener != null)
+        if (onTouchPadEventListener != null) {
             onTouchPadEventListener.onRightClick();
+        }
 
         return true;
     }
@@ -117,7 +118,6 @@ public class TouchPadView extends View implements
 
     @Override
     public void onShowPress(MotionEvent e) {
-
     }
 
     @Override
@@ -127,7 +127,6 @@ public class TouchPadView extends View implements
 
     @Override
     public void onLongPress(MotionEvent e) {
-
     }
 
     @Override

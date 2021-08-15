@@ -79,7 +79,6 @@ public class ScrollBarView extends View implements
 
     @Override
     public void onShowPress(MotionEvent e) {
-
     }
 
     @Override
@@ -89,7 +88,6 @@ public class ScrollBarView extends View implements
 
     @Override
     public void onLongPress(MotionEvent e) {
-
     }
 
     @Override
