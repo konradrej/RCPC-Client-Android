@@ -2,22 +2,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        app:title="@string/general_header"
-        app:iconSpaceReserved="false" >
+        app:iconSpaceReserved="false"
+        app:title="@string/general_header">
 
         <EditTextPreference
-            app:iconSpaceReserved="false"
-            app:defaultValue="15"
-            app:key="connection_history_entries_amount"
             android:selectAllOnFocus="true"
+            app:defaultValue="15"
+            app:iconSpaceReserved="false"
+            app:key="connection_history_entries_amount"
             app:singleLine="true"
             app:title="@string/connection_history_entries_amount_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
     <PreferenceCategory
-        app:title="@string/touchpad_layout_header"
-        app:iconSpaceReserved="false" >
+        app:iconSpaceReserved="false"
+        app:title="@string/touchpad_layout_header">
 
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"

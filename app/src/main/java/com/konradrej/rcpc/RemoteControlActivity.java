@@ -1,20 +1,23 @@
 package com.konradrej.rcpc;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.tabs.TabLayout;
-import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.databinding.ActivityRemoteControlBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RemoteControlActivity extends AppCompatActivity {
 
     private ActivityRemoteControlBinding binding;
-    private Thread thread;
-    private Fragment[] fragments = new Fragment[2];
+    private final List<Fragment> fragments = new ArrayList<>();
+    private final SocketHandler socketHandler = SocketHandler.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,44 +26,58 @@ public class RemoteControlActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        ConnectionHandler connectionHandler = new ConnectionHandler();
-        TouchPadFragment touchPadFragment = TouchPadFragment.newInstance();
-        touchPadFragment.setConnectionHandler(connectionHandler);
+        binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), socketHandler.getIP()));
 
-        fragments[0] = touchPadFragment;
-        fragments[1] = MediaKeysFragment.newInstance();
+        setupFragments();
+        setupNavigation();
+    }
 
+    private void setupFragments() {
+        TouchPadFragment touchPadFragment = new TouchPadFragment();
+        touchPadFragment.setConnectionHandler(socketHandler);
+        fragments.add(touchPadFragment);
+
+        MediaKeysFragment mediaKeysFragment = new MediaKeysFragment();
+        mediaKeysFragment.setConnectionHandler(socketHandler);
+        fragments.add(mediaKeysFragment);
+
+        setFragment(fragments.get(0));
+    }
+
+    private void setupNavigation() {
         binding.topAppBar.setNavigationOnClickListener((event) -> {
-            finish();
+            endRemoteControl();
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                endRemoteControl();
+            }
         });
 
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                // Handle tab select
-                setFragment(fragments[binding.tabLayout.getSelectedTabPosition()]);
-
+                setFragment(fragments.get(binding.tabLayout.getSelectedTabPosition()));
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                // Handle tab unselect
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                // Handle tab reselect
             }
         });
-
-
-        thread = new Thread(connectionHandler);
-        thread.start();
-
-        setFragment(fragments[0]);
     }
 
-    private void setFragment(Fragment fragment){
+    private void endRemoteControl() {
+        socketHandler.disconnect();
+        finish();
+    }
+
+    private void setFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
