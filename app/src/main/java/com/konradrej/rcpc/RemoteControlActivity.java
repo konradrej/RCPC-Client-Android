@@ -34,22 +34,29 @@ public class RemoteControlActivity extends AppCompatActivity {
 
         binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), socketHandler.getIP()));
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            for(int i = 0, tabCount = binding.tabLayout.getTabCount(); i < tabCount; i++){
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            for (int i = 0, tabCount = binding.tabLayout.getTabCount(); i < tabCount; i++) {
                 TabLayout.Tab tab = binding.tabLayout.getTabAt(i);
 
-                if(tab != null){
+                if (tab != null) {
                     tab.setIcon(null);
                 }
             }
         }
 
-        setupFragments();
+        setupFragments(savedInstanceState);
         setupErrorHandling();
         setupNavigation();
     }
 
-    private void setupFragments() {
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("fragmentIndex", binding.tabLayout.getSelectedTabPosition());
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private void setupFragments(Bundle savedInstanceState) {
         TouchPadFragment touchPadFragment = new TouchPadFragment();
         touchPadFragment.setConnectionHandler(socketHandler);
         fragments.add(touchPadFragment);
@@ -57,6 +64,20 @@ public class RemoteControlActivity extends AppCompatActivity {
         MediaKeysFragment mediaKeysFragment = new MediaKeysFragment();
         mediaKeysFragment.setConnectionHandler(socketHandler);
         fragments.add(mediaKeysFragment);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("fragmentIndex")) {
+                int fragmentIndex = savedInstanceState.getInt("fragmentIndex");
+                TabLayout.Tab tab = binding.tabLayout.getTabAt(fragmentIndex);
+
+                setFragment(fragments.get(fragmentIndex));
+
+                if (tab != null)
+                    tab.select();
+
+                return;
+            }
+        }
 
         setFragment(fragments.get(0));
     }
