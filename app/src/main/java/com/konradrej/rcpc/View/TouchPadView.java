@@ -34,11 +34,6 @@ public class TouchPadView extends View implements
         init();
     }
 
-    public TouchPadView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
-
     public void init() {
         gestureDetector = new GestureDetectorCompat(getContext(), this);
         super.setOnTouchListener(this);
@@ -89,7 +84,7 @@ public class TouchPadView extends View implements
         boolean consumed = false;
 
         if (wrappedOnTouchListener != null)
-            consumed |= wrappedOnTouchListener.onTouch(v, event);
+            consumed = wrappedOnTouchListener.onTouch(v, event);
 
         consumed |= gestureDetector.onTouchEvent(event);
 

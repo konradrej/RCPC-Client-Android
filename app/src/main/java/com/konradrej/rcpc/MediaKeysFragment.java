@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.transition.Transition;
 
@@ -20,7 +21,6 @@ public class MediaKeysFragment extends Fragment {
     private SocketHandler socketHandler;
 
     public MediaKeysFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -39,7 +39,7 @@ public class MediaKeysFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentMediaKeysBinding.inflate(inflater, container, false);
@@ -58,31 +58,21 @@ public class MediaKeysFragment extends Fragment {
     }
 
     private void setupButtons() {
-        binding.stopButton.setOnClickListener((event) -> {
-            sendMessage("Stop Button: Click");
-        });
-
-        binding.pauseButton.setOnClickListener((event) -> {
-            sendMessage("Pause Button: Click");
-        });
-
-        binding.playButton.setOnClickListener((event) -> {
-            sendMessage("Play Button: Click");
-        });
-
-        binding.previousButton.setOnClickListener((event) -> {
-            sendMessage("Previous Button: Click");
-        });
-
-        binding.nextButton.setOnClickListener((event) -> {
-            sendMessage("Next Button: Click");
-        });
+        binding.stopButton.setOnClickListener((event) ->
+                sendMessage("Stop Button: Click"));
+        binding.pauseButton.setOnClickListener((event) ->
+                sendMessage("Pause Button: Click"));
+        binding.playButton.setOnClickListener((event) ->
+                sendMessage("Play Button: Click"));
+        binding.previousButton.setOnClickListener((event) ->
+                sendMessage("Previous Button: Click"));
+        binding.nextButton.setOnClickListener((event) ->
+                sendMessage("Next Button: Click"));
     }
 
     private void setupSlider() {
-        binding.volumeSlider.addOnChangeListener((slider, value, fromUser) -> {
-            sendMessage("Volume Slider: Change Volume to " + value);
-        });
+        binding.volumeSlider.addOnChangeListener((slider, value, fromUser) ->
+                sendMessage("Volume Slider: Change Volume to " + value));
     }
 
     private void sendMessage(String message) {

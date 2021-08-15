@@ -1,10 +1,10 @@
 package com.konradrej.rcpc;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,53 +34,55 @@ public class ServerSelectActivity extends AppCompatActivity {
     private AppDatabase db;
 
     // TODO Possibly separate into individual listeners instead of multiple in one
-    private final SocketHandler.onNetworkEventListener networkEventListener = new SocketHandler.onNetworkEventListener() {
-        @Override
-        public void onConnect() {
-            addConnectionToHistory();
+    private final SocketHandler.onNetworkEventListener networkEventListener =
+            new SocketHandler.onNetworkEventListener() {
+                @Override
+                public void onConnect() {
+                    addConnectionToHistory();
 
-            runOnUiThread(() -> {
-                binding.connectionStatusIndicator.hide();
-            });
+                    runOnUiThread(() ->
+                            binding.connectionStatusIndicator.hide());
 
-            startActivity(new Intent(getApplicationContext(), RemoteControlActivity.class));
-        }
+                    startActivity(new Intent(getApplicationContext(), RemoteControlActivity.class));
+                }
 
-        @Override
-        public void onDisconnect() {
-        }
+                @Override
+                public void onDisconnect() {
+                }
 
-        @Override
-        public void onConnectTimeout() {
-            runOnUiThread(() -> {
-                binding.connectionStatusIndicator.hide();
+                @Override
+                public void onConnectTimeout() {
+                    runOnUiThread(() -> {
+                        binding.connectionStatusIndicator.hide();
 
-                MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(view.getContext());
+                        MaterialAlertDialogBuilder dialogBuilder =
+                                new MaterialAlertDialogBuilder(view.getContext());
 
-                dialogBuilder.setTitle(getString(R.string.could_not_connect_title))
-                        .setMessage(getString(R.string.could_not_connect_body))
-                        .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
-                            // TODO
-                        })
-                        .show();
+                        dialogBuilder.setTitle(getString(R.string.could_not_connect_title))
+                                .setMessage(getString(R.string.could_not_connect_body))
+                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
+                                    // TODO
+                                })
+                                .show();
 
-                // TODO move into RemoteControlActivity
-            });
-        }
+                        // TODO move into RemoteControlActivity
+                    });
+                }
 
-        @Override
-        public void onError(IOException e) {
-            runOnUiThread(() -> {
-                MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(view.getContext());
+                @Override
+                public void onError(IOException e) {
+                    runOnUiThread(() -> {
+                        MaterialAlertDialogBuilder dialogBuilder =
+                                new MaterialAlertDialogBuilder(view.getContext());
 
-                dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
-                        .setMessage(e.getLocalizedMessage())
-                        .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
-                        })
-                        .show();
-            });
-        }
-    };
+                        dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
+                                .setMessage(e.getLocalizedMessage())
+                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> {
+                                })
+                                .show();
+                    });
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +106,18 @@ public class ServerSelectActivity extends AppCompatActivity {
             binding.outlinedIpField.setError(null);
 
             Editable ipAddressEditable = binding.ipField.getText();
-            if (ipAddressEditable != null && Patterns.IP_ADDRESS.matcher(ipAddressEditable.toString()).matches()) {
-                connectToServer(ipAddressEditable.toString());
-            } else {
-                binding.outlinedIpField.setError(getString(R.string.address_input_error));
+
+            if (ipAddressEditable != null) {
+                String ipAddress = ipAddressEditable.toString();
+
+                if (Patterns.IP_ADDRESS.matcher(ipAddress).matches()) {
+                    connectToServer(ipAddress);
+
+                    return;
+                }
             }
+
+            binding.outlinedIpField.setError(getString(R.string.address_input_error));
         });
     }
 
@@ -142,6 +151,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
             for (Connection connection : connections) {
+                @SuppressLint("InflateParams")
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);
@@ -153,13 +163,11 @@ public class ServerSelectActivity extends AppCompatActivity {
                 dateView.setText(String.format(getString(R.string.connection_history_date_label), dateTime));
 
                 Button connectButton = childLayout.findViewById(R.id.connectButton);
-                connectButton.setOnClickListener((event) -> {
-                    connectToServer(connection.getIp());
-                });
+                connectButton.setOnClickListener((event) ->
+                        connectToServer(connection.getIp()));
 
-                runOnUiThread(() -> {
-                    binding.connectionHistoryContainer.addView(childLayout);
-                });
+                runOnUiThread(() ->
+                        binding.connectionHistoryContainer.addView(childLayout));
             }
         }).start();
     }

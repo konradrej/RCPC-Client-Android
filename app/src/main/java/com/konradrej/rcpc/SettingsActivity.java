@@ -11,12 +11,11 @@ import com.konradrej.rcpc.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private ActivitySettingsBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivitySettingsBinding.inflate(getLayoutInflater());
+        com.konradrej.rcpc.databinding.ActivitySettingsBinding binding =
+                ActivitySettingsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
@@ -27,9 +26,8 @@ public class SettingsActivity extends AppCompatActivity {
                     .commit();
         }
 
-        binding.topAppBar.setNavigationOnClickListener((event) -> {
-            finish();
-        });
+        binding.topAppBar.setNavigationOnClickListener((event) ->
+                finish());
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -37,9 +35,14 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            androidx.preference.EditTextPreference editTextPreference = getPreferenceManager().findPreference("connection_history_entries_amount");
+            androidx.preference.EditTextPreference editTextPreference =
+                    getPreferenceManager().findPreference("connection_history_entries_amount");
             if (editTextPreference != null)
-                editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED));
+                editTextPreference.setOnBindEditTextListener((editText) ->
+                        editText.setInputType(
+                                InputType.TYPE_CLASS_NUMBER |
+                                InputType.TYPE_NUMBER_FLAG_SIGNED
+                        ));
         }
     }
 }

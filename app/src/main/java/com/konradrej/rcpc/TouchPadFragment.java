@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.transition.Transition;
@@ -42,7 +43,7 @@ public class TouchPadFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentTouchPadBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -92,22 +93,17 @@ public class TouchPadFragment extends Fragment {
     }
 
     private void setupScrollBar() {
-        binding.scrollBarArea.setOnScrollBarEventListener(((distanceX, distanceY) -> {
-            sendMessage("Scrollbar: Scroll Event " + distanceX + " " + distanceY);
-        }));
+        binding.scrollBarArea.setOnScrollBarEventListener(((distanceX, distanceY) ->
+                sendMessage("Scrollbar: Scroll Event " + distanceX + " " + distanceY)));
     }
 
     private void setupButtons() {
-        binding.leftButtonArea.setOnClickListener((event) -> {
-            sendMessage("Button: Left Click");
-        });
-
-        binding.middleButtonArea.setOnClickListener((event) -> {
-            sendMessage("Button: Middle Click");
-        });
-        binding.rightButtonArea.setOnClickListener((event) -> {
-            sendMessage("Button: Right Click");
-        });
+        binding.leftButtonArea.setOnClickListener((event) ->
+                sendMessage("Button: Left Click"));
+        binding.middleButtonArea.setOnClickListener((event) ->
+                sendMessage("Button: Middle Click"));
+        binding.rightButtonArea.setOnClickListener((event) ->
+                sendMessage("Button: Right Click"));
     }
 
     private void sendMessage(String message) {

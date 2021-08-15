@@ -1,7 +1,5 @@
 package com.konradrej.rcpc;
 
-import android.util.Log;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -49,10 +47,6 @@ public class SocketHandler implements Runnable {
         this.onNetworkEventListeners.add(onNetworkEventListener);
     }
 
-    public void removeCallback(onNetworkEventListener onNetworkEventListener) {
-        this.onNetworkEventListeners.remove(onNetworkEventListener);
-    }
-
     public String getIP() {
         return ip;
     }
@@ -64,13 +58,11 @@ public class SocketHandler implements Runnable {
 
         try {
             socket.connect(socketAddress, 5000);
-
-            for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
-                onNetworkEventListener.onConnect();
-
             socket.setTcpNoDelay(true);
             socket.setPerformancePreferences(0, 2, 1);
             socket.setKeepAlive(true);
+
+            notifyListener(NetworkEvent.CONNECT, null);
 
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -84,15 +76,38 @@ public class SocketHandler implements Runnable {
             socket.close();
             disconnect = false;
 
-            for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
-                onNetworkEventListener.onDisconnect();
+            notifyListener(NetworkEvent.DISCONNECT, null);
         } catch (SocketTimeoutException e) {
-            for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
-                onNetworkEventListener.onConnectTimeout();
+            notifyListener(NetworkEvent.TIMEOUT, null);
         } catch (IOException e) {
-            for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners)
-                onNetworkEventListener.onError(e);
+            notifyListener(NetworkEvent.ERROR, e);
         }
+    }
+
+    public void notifyListener(NetworkEvent event, IOException errorException) {
+        for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners) {
+            switch (event) {
+                case CONNECT:
+                    onNetworkEventListener.onConnect();
+                    break;
+                case DISCONNECT:
+                    onNetworkEventListener.onDisconnect();
+                    break;
+                case TIMEOUT:
+                    onNetworkEventListener.onConnectTimeout();
+                    break;
+                case ERROR:
+                    onNetworkEventListener.onError(errorException);
+                    break;
+            }
+        }
+    }
+
+    private enum NetworkEvent {
+        CONNECT,
+        DISCONNECT,
+        TIMEOUT,
+        ERROR
     }
 
     public interface onNetworkEventListener {

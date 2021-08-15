@@ -45,9 +45,8 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void setupNavigation() {
-        binding.topAppBar.setNavigationOnClickListener((event) -> {
-            endRemoteControl();
-        });
+        binding.topAppBar.setNavigationOnClickListener((event) ->
+                endRemoteControl());
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
