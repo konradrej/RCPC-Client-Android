@@ -32,6 +32,34 @@ public class RemoteControlActivity extends AppCompatActivity {
     private final List<Fragment> fragments = new ArrayList<>();
     private final SocketHandler socketHandler = SocketHandler.getInstance();
 
+    private final SocketHandler.onNetworkEventListener networkEventListener =
+            new SocketHandler.onNetworkEventListener() {
+                @Override
+                public void onConnect() {
+                }
+
+                @Override
+                public void onDisconnect() {
+                }
+
+                @Override
+                public void onConnectTimeout() {
+                }
+
+                @Override
+                public void onError(IOException e) {
+                    runOnUiThread(() -> {
+                        MaterialAlertDialogBuilder dialogBuilder =
+                                new MaterialAlertDialogBuilder(view.getContext());
+
+                        dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
+                                .setMessage(e.getLocalizedMessage())
+                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
+                                .show();
+                    });
+                }
+            };
+
     /**
      * Setups the activities view and interaction.
      *
@@ -59,6 +87,16 @@ public class RemoteControlActivity extends AppCompatActivity {
         setupFragments(savedInstanceState);
         setupErrorHandling();
         setupNavigation();
+    }
+
+    /**
+     * Removes itself as callback for SocketHandler.
+     */
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        socketHandler.removeCallback(networkEventListener);
     }
 
     /**
@@ -100,32 +138,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void setupErrorHandling() {
-        socketHandler.addCallback(new SocketHandler.onNetworkEventListener() {
-            @Override
-            public void onConnect() {
-            }
-
-            @Override
-            public void onDisconnect() {
-            }
-
-            @Override
-            public void onConnectTimeout() {
-            }
-
-            @Override
-            public void onError(IOException e) {
-                runOnUiThread(() -> {
-                    MaterialAlertDialogBuilder dialogBuilder =
-                            new MaterialAlertDialogBuilder(view.getContext());
-
-                    dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
-                            .setMessage(e.getLocalizedMessage())
-                            .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
-                            .show();
-                });
-            }
-        });
+        socketHandler.addCallback(networkEventListener);
     }
 
     private void setupNavigation() {

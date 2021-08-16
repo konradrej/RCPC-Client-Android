@@ -101,10 +101,8 @@ public class SocketHandler implements Runnable {
      */
     @Override
     public void run() {
-        Socket socket = new Socket();
-        SocketAddress socketAddress = new InetSocketAddress(ip, 666);
-
-        try {
+        try (Socket socket = new Socket()) {
+            SocketAddress socketAddress = new InetSocketAddress(ip, 666);
             socket.connect(socketAddress, 5000);
             socket.setTcpNoDelay(true);
             socket.setPerformancePreferences(0, 2, 1);
@@ -119,16 +117,14 @@ public class SocketHandler implements Runnable {
                     out.writeUTF(messageQueue.removeFirst());
                 }
             }
-
-            out.flush();
-            socket.close();
-            disconnect = false;
-
-            notifyListener(NetworkEvent.DISCONNECT, null);
         } catch (SocketTimeoutException e) {
             notifyListener(NetworkEvent.TIMEOUT, null);
         } catch (IOException e) {
             notifyListener(NetworkEvent.ERROR, e);
+        } finally {
+            disconnect = false;
+            notifyListener(NetworkEvent.DISCONNECT, null);
+            singleInstance = new SocketHandler();
         }
     }
 
