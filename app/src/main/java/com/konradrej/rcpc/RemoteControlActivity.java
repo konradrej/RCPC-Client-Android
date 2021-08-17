@@ -26,11 +26,37 @@ import java.util.List;
  */
 public class RemoteControlActivity extends AppCompatActivity {
 
+    private final List<Fragment> fragments = new ArrayList<>();
+    private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private ActivityRemoteControlBinding binding;
     private View view;
+    private final ConnectionHandler.onNetworkEventListener networkEventListener =
+            new ConnectionHandler.onNetworkEventListener() {
+                @Override
+                public void onConnect() {
+                }
 
-    private final List<Fragment> fragments = new ArrayList<>();
-    private final SocketHandler socketHandler = SocketHandler.getInstance();
+                @Override
+                public void onDisconnect() {
+                }
+
+                @Override
+                public void onConnectTimeout() {
+                }
+
+                @Override
+                public void onError(IOException e) {
+                    runOnUiThread(() -> {
+                        MaterialAlertDialogBuilder dialogBuilder =
+                                new MaterialAlertDialogBuilder(view.getContext());
+
+                        dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
+                                .setMessage(e.getLocalizedMessage())
+                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
+                                .show();
+                    });
+                }
+            };
 
     /**
      * Setups the activities view and interaction.
@@ -44,7 +70,7 @@ public class RemoteControlActivity extends AppCompatActivity {
         view = binding.getRoot();
         setContentView(view);
 
-        binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), socketHandler.getIP()));
+        binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), connectionHandler.getIP()));
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             for (int i = 0, tabCount = binding.tabLayout.getTabCount(); i < tabCount; i++) {
@@ -62,6 +88,16 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     /**
+     * Removes itself as callback for SocketHandler.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        connectionHandler.removeCallback(networkEventListener);
+    }
+
+    /**
      * Saves the current instances state to bundle.
      *
      * @param savedInstanceState bundle to save to
@@ -75,11 +111,11 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     private void setupFragments(Bundle savedInstanceState) {
         TouchPadFragment touchPadFragment = new TouchPadFragment();
-        touchPadFragment.setConnectionHandler(socketHandler);
+        touchPadFragment.setConnectionHandler(connectionHandler);
         fragments.add(touchPadFragment);
 
         MediaKeysFragment mediaKeysFragment = new MediaKeysFragment();
-        mediaKeysFragment.setConnectionHandler(socketHandler);
+        mediaKeysFragment.setConnectionHandler(connectionHandler);
         fragments.add(mediaKeysFragment);
 
         if (savedInstanceState != null) {
@@ -100,32 +136,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void setupErrorHandling() {
-        socketHandler.addCallback(new SocketHandler.onNetworkEventListener() {
-            @Override
-            public void onConnect() {
-            }
-
-            @Override
-            public void onDisconnect() {
-            }
-
-            @Override
-            public void onConnectTimeout() {
-            }
-
-            @Override
-            public void onError(IOException e) {
-                runOnUiThread(() -> {
-                    MaterialAlertDialogBuilder dialogBuilder =
-                            new MaterialAlertDialogBuilder(view.getContext());
-
-                    dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
-                            .setMessage(e.getLocalizedMessage())
-                            .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
-                            .show();
-                });
-            }
-        });
+        connectionHandler.addCallback(networkEventListener);
     }
 
     private void setupNavigation() {
@@ -156,7 +167,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void endRemoteControl() {
-        socketHandler.disconnect();
+        connectionHandler.disconnect();
         startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
         finish();
     }

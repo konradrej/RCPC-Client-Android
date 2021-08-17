@@ -22,7 +22,7 @@ import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 public class MediaKeysFragment extends Fragment {
 
     private FragmentMediaKeysBinding binding;
-    private SocketHandler socketHandler;
+    private ConnectionHandler connectionHandler;
 
     /**
      * Required empty constructor
@@ -49,10 +49,10 @@ public class MediaKeysFragment extends Fragment {
     /**
      * Sets socketHandler.
      *
-     * @param socketHandler the handler to set
+     * @param connectionHandler the handler to set
      */
-    public void setConnectionHandler(SocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
+    public void setConnectionHandler(ConnectionHandler connectionHandler) {
+        this.connectionHandler = connectionHandler;
     }
 
     /**
@@ -104,8 +104,8 @@ public class MediaKeysFragment extends Fragment {
     }
 
     private void sendMessage(String message) {
-        if (socketHandler != null) {
-            socketHandler.sendMessage(message);
+        if (connectionHandler != null) {
+            connectionHandler.sendMessage(message);
         }
     }
 }

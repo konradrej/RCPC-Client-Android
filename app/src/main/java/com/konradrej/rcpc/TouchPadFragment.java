@@ -26,7 +26,7 @@ public class TouchPadFragment extends Fragment {
 
     private FragmentTouchPadBinding binding;
     private SharedPreferences sharedPreferences;
-    private SocketHandler socketHandler;
+    private ConnectionHandler connectionHandler;
 
     /**
      * Required empty constructor
@@ -55,10 +55,10 @@ public class TouchPadFragment extends Fragment {
     /**
      * Sets socketHandler.
      *
-     * @param socketHandler the handler to set
+     * @param connectionHandler the handler to set
      */
-    public void setConnectionHandler(SocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
+    public void setConnectionHandler(ConnectionHandler connectionHandler) {
+        this.connectionHandler = connectionHandler;
     }
 
     /**
@@ -135,8 +135,8 @@ public class TouchPadFragment extends Fragment {
     }
 
     private void sendMessage(String message) {
-        if (socketHandler != null) {
-            socketHandler.sendMessage(message);
+        if (connectionHandler != null) {
+            connectionHandler.sendMessage(message);
         }
     }
 }
