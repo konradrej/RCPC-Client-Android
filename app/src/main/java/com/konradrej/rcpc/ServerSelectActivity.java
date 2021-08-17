@@ -34,15 +34,14 @@ import java.util.List;
  */
 public class ServerSelectActivity extends AppCompatActivity {
 
+    private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private ActivityServerSelectBinding binding;
     private View view;
-
-    private final SocketHandler socketHandler = SocketHandler.getInstance();
     private SharedPreferences sharedPreferences;
     private AppDatabase db;
 
-    private final SocketHandler.onNetworkEventListener networkEventListener =
-            new SocketHandler.onNetworkEventListener() {
+    private final ConnectionHandler.onNetworkEventListener networkEventListener =
+            new ConnectionHandler.onNetworkEventListener() {
                 @Override
                 public void onConnect() {
                     addConnectionToHistory();
@@ -124,18 +123,16 @@ public class ServerSelectActivity extends AppCompatActivity {
      * Removes itself as callback for SocketHandler.
      */
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
 
-        socketHandler.removeCallback(networkEventListener);
+        connectionHandler.removeCallback(networkEventListener);
     }
 
     private void connectToServer(String ip) {
         binding.connectionStatusIndicator.show();
 
-        socketHandler.setIP(ip);
-        socketHandler.addCallback(networkEventListener);
-        new Thread(socketHandler).start();
+        connectionHandler.connectToServer(ip, networkEventListener);
     }
 
     private void addConnectionToHistory() {
@@ -143,7 +140,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             ConnectionDAO connectionDAO = db.connectionDAO();
 
             Connection connection = new Connection();
-            connection.ip = socketHandler.getIP();
+            connection.ip = connectionHandler.getIP();
             connection.connectTimestamp = System.currentTimeMillis();
 
             connectionDAO.insert(connection);

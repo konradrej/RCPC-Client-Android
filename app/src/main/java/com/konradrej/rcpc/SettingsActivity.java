@@ -52,6 +52,11 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    private void endSettings() {
+        startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
+        finish();
+    }
+
     /**
      * Populates and setups preferences from file,
      */
@@ -69,10 +74,5 @@ public class SettingsActivity extends AppCompatActivity {
                                         InputType.TYPE_NUMBER_FLAG_SIGNED
                         ));
         }
-    }
-
-    private void endSettings() {
-        startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
-        finish();
     }
 }
