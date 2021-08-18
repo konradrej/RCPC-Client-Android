@@ -24,7 +24,7 @@ public class ConnectionHandler {
     private SocketHandler socketHandler = null;
 
     private ConnectionHandler() {
-        
+
     }
 
     /**
@@ -150,6 +150,7 @@ public class ConnectionHandler {
         @Override
         public void run() {
             try (Socket socket = new Socket()) {
+                // Connect socket and optimize its settings
                 SocketAddress socketAddress = new InetSocketAddress(ip, 666);
                 socket.connect(socketAddress, 5000);
                 socket.setTcpNoDelay(true);

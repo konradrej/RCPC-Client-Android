@@ -144,6 +144,7 @@ public class TouchPadView extends View implements
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (onTouchPadEventListener != null) {
+            // If single finger move, if two scroll, else ignore
             if (touchAmount == 1) {
                 onTouchPadEventListener.onMove(distanceX, distanceY);
             } else if (touchAmount == 2) {

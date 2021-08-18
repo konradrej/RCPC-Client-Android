@@ -75,7 +75,7 @@ public class TouchPadFragment extends Fragment {
         binding = FragmentTouchPadBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-
+        // Get setting and set layout accordingly
         if (sharedPreferences.getBoolean("flip_touchpad_buttons", false)) {
             binding.buttonContainer.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         }

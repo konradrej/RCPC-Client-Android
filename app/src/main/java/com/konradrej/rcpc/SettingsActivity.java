@@ -33,12 +33,10 @@ public class SettingsActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, new SettingsFragment())
-                    .commit();
-        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings, new SettingsFragment())
+                .commit();
 
         binding.topAppBar.setNavigationOnClickListener((event) -> {
             endSettings();
@@ -65,8 +63,11 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
+
             androidx.preference.EditTextPreference editTextPreference =
                     getPreferenceManager().findPreference("connection_history_entries_amount");
+
+            // Sets keyboard for editTextPreference to numbers only
             if (editTextPreference != null)
                 editTextPreference.setOnBindEditTextListener((editText) ->
                         editText.setInputType(

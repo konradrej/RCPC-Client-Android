@@ -62,10 +62,8 @@ public class ServerSelectActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         binding.connectionStatusIndicator.hide();
 
-                        MaterialAlertDialogBuilder dialogBuilder =
-                                new MaterialAlertDialogBuilder(view.getContext());
-
-                        dialogBuilder.setTitle(getString(R.string.could_not_connect_title))
+                        new MaterialAlertDialogBuilder(view.getContext())
+                                .setTitle(getString(R.string.could_not_connect_title))
                                 .setMessage(getString(R.string.could_not_connect_body))
                                 .setNeutralButton(getString(R.string.neutral_response_ok), null)
                                 .show();
@@ -89,10 +87,11 @@ public class ServerSelectActivity extends AppCompatActivity {
         view = binding.getRoot();
         setContentView(view);
 
-        // getApplicationContext().deleteDatabase("RCPCStorage");
+        // Create/get database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         populateConnectionHistory();
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         binding.topAppBar.setOnMenuItemClickListener((menuItem) -> {
             startActivity(new Intent(this, SettingsActivity.class));
@@ -108,6 +107,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             if (ipAddressEditable != null) {
                 String ipAddress = ipAddressEditable.toString();
 
+                // Check for valid ip address
                 if (Patterns.IP_ADDRESS.matcher(ipAddress).matches()) {
                     connectToServer(ipAddress);
 
@@ -157,7 +157,6 @@ public class ServerSelectActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
             for (Connection connection : connections) {
-                @SuppressLint("InflateParams")
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);

@@ -30,6 +30,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private ActivityRemoteControlBinding binding;
     private View view;
+
     private final ConnectionHandler.onNetworkEventListener networkEventListener =
             new ConnectionHandler.onNetworkEventListener() {
                 @Override
@@ -72,6 +73,7 @@ public class RemoteControlActivity extends AppCompatActivity {
 
         binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), connectionHandler.getIP()));
 
+        // Remove tab icons if in landscape
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             for (int i = 0, tabCount = binding.tabLayout.getTabCount(); i < tabCount; i++) {
                 TabLayout.Tab tab = binding.tabLayout.getTabAt(i);
@@ -118,6 +120,7 @@ public class RemoteControlActivity extends AppCompatActivity {
         mediaKeysFragment.setConnectionHandler(connectionHandler);
         fragments.add(mediaKeysFragment);
 
+        // Checks if fragmentIndex was saved and restores it if so
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("fragmentIndex")) {
                 int fragmentIndex = savedInstanceState.getInt("fragmentIndex");
@@ -168,6 +171,7 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     private void endRemoteControl() {
         connectionHandler.disconnect();
+
         startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
         finish();
     }
