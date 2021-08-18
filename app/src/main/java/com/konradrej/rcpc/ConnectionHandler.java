@@ -23,6 +23,10 @@ public class ConnectionHandler {
     private final Set<onNetworkEventListener> onNetworkEventListeners = new HashSet<>();
     private SocketHandler socketHandler = null;
 
+    private ConnectionHandler() {
+        
+    }
+
     /**
      * Creates an instance of singleton ConnectionHandler
      * if it does not exist yet and returns it.
