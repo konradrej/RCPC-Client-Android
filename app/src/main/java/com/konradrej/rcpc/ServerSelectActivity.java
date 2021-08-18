@@ -87,12 +87,12 @@ public class ServerSelectActivity extends AppCompatActivity {
         view = binding.getRoot();
         setContentView(view);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         // Create/get database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
         populateConnectionHistory();
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        
         binding.topAppBar.setOnMenuItemClickListener((menuItem) -> {
             startActivity(new Intent(this, SettingsActivity.class));
 
