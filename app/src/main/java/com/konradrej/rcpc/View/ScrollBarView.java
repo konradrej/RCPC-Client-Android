@@ -23,6 +23,7 @@ public class ScrollBarView extends View implements
     private OnTouchListener wrappedOnTouchListener = null;
     private OnScrollBarEventListener onScrollBarEventListener = null;
     private GestureDetectorCompat gestureDetector;
+    private boolean ignoreFirstScrollEvent = true;
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -111,21 +112,26 @@ public class ScrollBarView extends View implements
      */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (onScrollBarEventListener != null) {
-            onScrollBarEventListener.onScroll(distanceX, distanceY);
+        if (ignoreFirstScrollEvent) {
+            ignoreFirstScrollEvent = false;
+        } else {
+            if (onScrollBarEventListener != null) {
+                onScrollBarEventListener.onScroll(distanceX, distanceY);
+            }
         }
 
         return true;
     }
 
     /**
-     * Not in use, implemented cause of interface requirement.
+     * TODO
      *
      * @param e ignored
      * @return true
      */
     @Override
     public boolean onDown(MotionEvent e) {
+        ignoreFirstScrollEvent = true;
         return true;
     }
 

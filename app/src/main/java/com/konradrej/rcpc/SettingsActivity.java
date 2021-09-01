@@ -28,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.konradrej.rcpc.databinding.ActivitySettingsBinding binding =
+        ActivitySettingsBinding binding =
                 ActivitySettingsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -38,9 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
 
-        binding.topAppBar.setNavigationOnClickListener((event) -> {
-            endSettings();
-        });
+        binding.topAppBar.setNavigationOnClickListener((event) -> endSettings());
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

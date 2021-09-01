@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.konradrej.rcpc.RemoteControlActivity">
+    tools:context=".RemoteControlActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -27,11 +27,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
+                android:visibility="invisible"
                 app:hideAnimationBehavior="outward"
                 app:indicatorColor="?colorPrimaryDark"
                 app:showAnimationBehavior="inward"
-                app:trackColor="?colorPrimaryVariant"
-                android:visibility="invisible" />
+                app:trackColor="?colorPrimaryVariant" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -102,8 +102,7 @@
                     android:id="@+id/connectionHistoryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-                </LinearLayout>
+                    android:orientation="vertical" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

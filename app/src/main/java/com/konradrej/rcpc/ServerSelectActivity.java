@@ -1,6 +1,7 @@
 package com.konradrej.rcpc;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,6 +23,10 @@ import com.konradrej.rcpc.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.List;
 
@@ -87,12 +92,25 @@ public class ServerSelectActivity extends AppCompatActivity {
         view = binding.getRoot();
         setContentView(view);
 
+        KeyStore trustStore = null;
+        Context context = getApplicationContext();
+        try {
+            trustStore = KeyStore.getInstance("PKCS12");
+            trustStore.load(context.getResources().openRawResource(
+                    context.getResources().getIdentifier("truststore_new",
+                            "raw", context.getPackageName())), "".toCharArray());//TODO Password management
+
+        } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        connectionHandler.setTruststore(trustStore);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Create/get database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
         populateConnectionHistory();
-        
+
         binding.topAppBar.setOnMenuItemClickListener((menuItem) -> {
             startActivity(new Intent(this, SettingsActivity.class));
 
@@ -157,6 +175,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
             for (Connection connection : connections) {
+                @SuppressLint("InflateParams")
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);

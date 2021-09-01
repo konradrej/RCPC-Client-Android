@@ -3,13 +3,21 @@ package com.konradrej.rcpc;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Handles communication to server.
@@ -22,6 +30,8 @@ public class ConnectionHandler {
     private static ConnectionHandler singleInstance = null;
     private final Set<onNetworkEventListener> onNetworkEventListeners = new HashSet<>();
     private SocketHandler socketHandler = null;
+    private KeyStore keyStore;
+    private KeyStore trustStore;
 
     private ConnectionHandler() {
 
@@ -50,6 +60,14 @@ public class ConnectionHandler {
         socketHandler.messageQueue.add(message);
     }
 
+    public void setKeyStore(KeyStore keyStore) {
+        this.keyStore = keyStore;
+    }
+
+    public void setTruststore(KeyStore trustStore) {
+        this.trustStore = trustStore;
+    }
+
     /**
      * Disconnects previous connection and connects to given ip address.
      *
@@ -63,6 +81,8 @@ public class ConnectionHandler {
 
         socketHandler = new SocketHandler();
         socketHandler.ip = ip;
+        socketHandler.keyStore = keyStore;
+        socketHandler.trustStore = trustStore;
 
         addCallback(networkEventListener);
 
@@ -146,33 +166,49 @@ public class ConnectionHandler {
         private final Deque<String> messageQueue = new ArrayDeque<>();
         private boolean disconnect = false;
         private String ip = null;
+        private KeyStore keyStore;
+        private KeyStore trustStore;
 
         @Override
         public void run() {
-            try (Socket socket = new Socket()) {
-                // Connect socket and optimize its settings
-                SocketAddress socketAddress = new InetSocketAddress(ip, 666);
-                socket.connect(socketAddress, 5000);
-                socket.setTcpNoDelay(true);
-                socket.setPerformancePreferences(0, 2, 1);
-                socket.setKeepAlive(true);
+            try {
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmf.init(trustStore);
 
-                notifyListener(NetworkEvent.CONNECT, null);
+                SSLContext ssl_ctx = SSLContext.getInstance("TLSv1");
+                ssl_ctx.init(null, tmf.getTrustManagers(), null);
 
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                SSLSocketFactory sslSocketFactory = ssl_ctx.getSocketFactory();
 
-                while (!disconnect) {
-                    if (!messageQueue.isEmpty()) {
-                        out.writeUTF(messageQueue.removeFirst());
+                try (SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket()) {
+                    // Connect socket and optimize its settings
+                    SocketAddress socketAddress = new InetSocketAddress(ip, 666);
+                    socket.connect(socketAddress, 5000);
+                    socket.setTcpNoDelay(true);
+                    socket.setPerformancePreferences(0, 2, 1);
+                    socket.setKeepAlive(true);
+
+                    notifyListener(NetworkEvent.CONNECT, null);
+
+                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+                    while (!disconnect) {
+                        if (!messageQueue.isEmpty()) {
+                            out.writeUTF(messageQueue.removeFirst());
+                        }
                     }
+                } catch (SocketTimeoutException e) {
+                    notifyListener(NetworkEvent.TIMEOUT, null);
+                } catch (IOException e) {
+                    notifyListener(NetworkEvent.ERROR, e);
+                } finally {
+                    disconnect = false;
+                    notifyListener(NetworkEvent.DISCONNECT, null);
                 }
-            } catch (SocketTimeoutException e) {
-                notifyListener(NetworkEvent.TIMEOUT, null);
-            } catch (IOException e) {
-                notifyListener(NetworkEvent.ERROR, e);
-            } finally {
-                disconnect = false;
-                notifyListener(NetworkEvent.DISCONNECT, null);
+
+
+            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+                e.printStackTrace();
             }
         }
     }

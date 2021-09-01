@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.konradrej.rcpc.RemoteControlActivity">
+    tools:context=".RemoteControlActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
@@ -34,16 +34,16 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/tab_touchpad_content_description"
                     android:icon="@drawable/ic_mouse_24"
-                    android:text="@string/tab_touchpad"
-                    android:contentDescription="@string/tab_touchpad_content_description"/>
+                    android:text="@string/tab_touchpad" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/tab_media_keys_content_description"
                     android:icon="@drawable/ic_music_note_24"
-                    android:text="@string/tab_media_keys"
-                    android:contentDescription="@string/tab_media_keys_content_description"/>
+                    android:text="@string/tab_media_keys" />
 
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>

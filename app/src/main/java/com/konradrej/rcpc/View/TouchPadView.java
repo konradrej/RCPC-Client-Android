@@ -24,7 +24,7 @@ public class TouchPadView extends View implements
     private OnTouchListener wrappedOnTouchListener = null;
     private OnTouchPadEventListener onTouchPadEventListener = null;
     private GestureDetectorCompat gestureDetector;
-    private int touchAmount = 0;
+    private boolean ignoreFirstScrollEvent = true;
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -121,7 +121,6 @@ public class TouchPadView extends View implements
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        touchAmount = event.getPointerCount();
         boolean consumed = false;
 
         if (wrappedOnTouchListener != null)
@@ -143,12 +142,18 @@ public class TouchPadView extends View implements
      */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (onTouchPadEventListener != null) {
-            // If single finger move, if two scroll, else ignore
-            if (touchAmount == 1) {
-                onTouchPadEventListener.onMove(distanceX, distanceY);
-            } else if (touchAmount == 2) {
-                onTouchPadEventListener.onScroll(distanceX, distanceY);
+        if (ignoreFirstScrollEvent) {
+            ignoreFirstScrollEvent = false;
+        } else {
+            int touchAmount = e2.getPointerCount();
+
+            if (onTouchPadEventListener != null) {
+                // If single finger move, if two scroll, else ignore
+                if (touchAmount == 1) {
+                    onTouchPadEventListener.onMove(distanceX, distanceY);
+                } else if (touchAmount == 2) {
+                    onTouchPadEventListener.onScroll(distanceX, distanceY);
+                }
             }
         }
 
@@ -167,13 +172,14 @@ public class TouchPadView extends View implements
     }
 
     /**
-     * Not in use, implemented cause of interface requirement.
+     * TODO
      *
      * @param e ignored
      * @return true
      */
     @Override
     public boolean onDown(MotionEvent e) {
+        ignoreFirstScrollEvent = true;
         return true;
     }
 
