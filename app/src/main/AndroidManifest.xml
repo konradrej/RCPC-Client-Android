@@ -10,9 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RCPC">
-        <activity android:name="com.konradrej.rcpc.SettingsActivity" />
-        <activity android:name="com.konradrej.rcpc.RemoteControlActivity" />
-        <activity android:name="com.konradrej.rcpc.ServerSelectActivity">
+        <activity android:name="com.konradrej.rcpc.client.SettingsActivity" />
+        <activity android:name="com.konradrej.rcpc.client.RemoteControlActivity" />
+        <activity android:name="com.konradrej.rcpc.client.ServerSelectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

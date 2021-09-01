@@ -1,4 +1,4 @@
-package com.konradrej.rcpc;
+package com.konradrej.rcpc.client;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.databinding.ActivitySettingsBinding;
 
 /**

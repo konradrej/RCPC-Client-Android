@@ -1,4 +1,4 @@
-package com.konradrej.rcpc.Room.Entity;
+package com.konradrej.rcpc.client.Room.Entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

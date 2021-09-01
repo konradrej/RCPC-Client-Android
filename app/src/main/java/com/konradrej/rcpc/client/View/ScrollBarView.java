@@ -1,4 +1,4 @@
-package com.konradrej.rcpc.View;
+package com.konradrej.rcpc.client.View;
 
 import android.content.Context;
 import android.util.AttributeSet;

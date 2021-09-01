@@ -1,4 +1,4 @@
-package com.konradrej.rcpc;
+package com.konradrej.rcpc.client;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import androidx.preference.PreferenceManager;
 import androidx.transition.Transition;
 
 import com.google.android.material.transition.MaterialSharedAxis;
-import com.konradrej.rcpc.View.TouchPadView;
+import com.konradrej.rcpc.client.View.TouchPadView;
 import com.konradrej.rcpc.databinding.FragmentTouchPadBinding;
 
 /**

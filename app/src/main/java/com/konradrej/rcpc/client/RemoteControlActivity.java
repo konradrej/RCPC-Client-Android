@@ -1,4 +1,4 @@
-package com.konradrej.rcpc;
+package com.konradrej.rcpc.client;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
+import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.databinding.ActivityRemoteControlBinding;
 
 import java.io.IOException;

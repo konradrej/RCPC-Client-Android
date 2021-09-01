@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TouchPadFragment"
+    tools:context=".client.TouchPadFragment"
     tools:ignore="NestedWeights">
 
     <LinearLayout
@@ -19,7 +19,7 @@
         android:layoutDirection="inherit"
         android:orientation="horizontal">
 
-        <com.konradrej.rcpc.View.TouchPadView
+        <com.konradrej.rcpc.client.View.TouchPadView
             android:id="@+id/touchPadArea"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0" />
 
-        <com.konradrej.rcpc.View.ScrollBarView
+        <com.konradrej.rcpc.client.View.ScrollBarView
             android:id="@+id/scrollBarArea"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.konradrej.rcpc;
+package com.konradrej.rcpc.client;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

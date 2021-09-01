@@ -1,10 +1,10 @@
-package com.konradrej.rcpc.Room.DAO;
+package com.konradrej.rcpc.client.Room.DAO;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.konradrej.rcpc.Room.Entity.Connection;
+import com.konradrej.rcpc.client.Room.Entity.Connection;
 
 import java.util.List;
 

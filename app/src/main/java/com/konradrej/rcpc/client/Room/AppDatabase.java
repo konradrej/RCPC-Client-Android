@@ -1,10 +1,10 @@
-package com.konradrej.rcpc.Room;
+package com.konradrej.rcpc.client.Room;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.konradrej.rcpc.Room.DAO.ConnectionDAO;
-import com.konradrej.rcpc.Room.Entity.Connection;
+import com.konradrej.rcpc.client.Room.DAO.ConnectionDAO;
+import com.konradrej.rcpc.client.Room.Entity.Connection;
 
 /**
  * Represents the application database.

@@ -1,4 +1,4 @@
-package com.konradrej.rcpc;
+package com.konradrej.rcpc.client;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,9 +17,10 @@ import androidx.preference.PreferenceManager;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.konradrej.rcpc.Room.AppDatabase;
-import com.konradrej.rcpc.Room.DAO.ConnectionDAO;
-import com.konradrej.rcpc.Room.Entity.Connection;
+import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.client.Room.AppDatabase;
+import com.konradrej.rcpc.client.Room.DAO.ConnectionDAO;
+import com.konradrej.rcpc.client.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
 import java.io.IOException;
