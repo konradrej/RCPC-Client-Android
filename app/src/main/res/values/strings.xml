@@ -33,8 +33,7 @@
 
     <!-- Fragment: MediaKeys -->
     <string name="media_stop_label">Stop</string>
-    <string name="media_pause_label">Pause</string>
-    <string name="media_play_label">Play</string>
+    <string name="media_play_pause_label">Play/Pause</string>
     <string name="media_previous_label">Previous</string>
     <string name="media_next_label">Next</string>
     <string name="volume_label">Volume</string>

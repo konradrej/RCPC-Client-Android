@@ -88,10 +88,8 @@ public class MediaKeysFragment extends Fragment {
     private void setupButtons() {
         binding.stopButton.setOnClickListener((event) ->
                 sendMessage("Stop Button: Click"));
-        binding.pauseButton.setOnClickListener((event) ->
-                sendMessage("Pause Button: Click"));
-        binding.playButton.setOnClickListener((event) ->
-                sendMessage("Play Button: Click"));
+        binding.playPauseButton.setOnClickListener((event) ->
+                sendMessage("Play/Pause Button: Click"));
         binding.previousButton.setOnClickListener((event) ->
                 sendMessage("Previous Button: Click"));
         binding.nextButton.setOnClickListener((event) ->

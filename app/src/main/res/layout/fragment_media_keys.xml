@@ -22,7 +22,7 @@
 
             <Button
                 android:id="@+id/stopButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/media_stop_label"
@@ -34,25 +34,13 @@
                 android:layout_weight="0" />
 
             <Button
-                android:id="@+id/pauseButton"
-                android:layout_width="wrap_content"
+                android:id="@+id/playPauseButton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/media_pause_label"
-                app:icon="@drawable/ic_pause_24" />
+                android:text="@string/media_play_pause_label"
+                app:icon="@drawable/ic_play_pause_24" />
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0" />
-
-            <Button
-                android:id="@+id/playButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/media_play_label"
-                app:icon="@drawable/ic_play_arrow_24" />
         </LinearLayout>
 
         <LinearLayout
@@ -62,7 +50,7 @@
 
             <Button
                 android:id="@+id/previousButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/media_previous_label"
@@ -75,7 +63,7 @@
 
             <Button
                 android:id="@+id/nextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/media_next_label"
