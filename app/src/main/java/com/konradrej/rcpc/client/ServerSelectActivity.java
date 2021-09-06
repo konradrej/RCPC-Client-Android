@@ -175,6 +175,11 @@ public class ServerSelectActivity extends AppCompatActivity {
 
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
+            if(connections.size() > 0){
+                runOnUiThread(() ->
+                        binding.connectionHistoryContainer.removeAllViews());
+            }
+
             for (Connection connection : connections) {
                 @SuppressLint("InflateParams")
                 View childLayout = inflater.inflate(R.layout.connection_history_item, null);
