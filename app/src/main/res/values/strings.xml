@@ -18,11 +18,14 @@
     <string name="settings">Settings</string>
     <string name="content_description_settings">Open settings</string>
     <string name="connect_button">Connect</string>
+    <string name="nearby_servers_title">Nearby servers</string>
+    <string name="nearby_servers_no_servers_found">No nearby servers.</string>
     <string name="connection_history_title">Connection history</string>
     <string name="address_input_hint">IP-Address</string>
     <string name="address_input_error">Incorrect IP address.</string>
     <string name="connection_history_address_label">Address: %1$s</string>
     <string name="connection_history_date_label">Date: %1$s</string>
+    <string name="connection_history_no_items_found">No previous connections.</string>
 
     <!-- Remote Control -->
     <string name="remote_control_title">%1$s [Connected]</string>

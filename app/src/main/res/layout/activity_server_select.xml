@@ -85,10 +85,44 @@
                         android:text="@string/connect_button" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/nearbyServers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/nearby_servers_title"
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <LinearLayout
+                        android:id="@+id/nearbyServersContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nearby_servers_no_servers_found"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2" />
+                    </LinearLayout>
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/connection_history_title"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
@@ -102,7 +136,15 @@
                     android:id="@+id/connectionHistoryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical" />
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/connection_history_no_items_found"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
