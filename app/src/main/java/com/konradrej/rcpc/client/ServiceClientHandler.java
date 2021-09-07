@@ -12,15 +12,15 @@ import android.util.Log;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
  */
 public class ServiceClientHandler {
     private static final String TAG = "ServiceClientHandler";
     private static final String SERVICE_TYPE = "_rcpc._tcp.";
-    private static final ServiceDiscoveryListener discoveryListener = new ServiceDiscoveryListener();
     private static final ServiceResolveListener resolveListener = new ServiceResolveListener();
     private static ServiceListener serviceListener = null;
 
+    private static ServiceDiscoveryListener discoveryListener = null;
     private static NsdManager nsdManager = null;
 
     private ServiceClientHandler() {
@@ -33,10 +33,13 @@ public class ServiceClientHandler {
      * @param context application context
      */
     public static void start(Context context) {
+        stop();
+
         if (nsdManager == null) {
             nsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
         }
 
+        discoveryListener = new ServiceDiscoveryListener();
         nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener);
     }
 
@@ -44,13 +47,16 @@ public class ServiceClientHandler {
      * Stop all service discovery.
      */
     public static void stop() {
-        if (nsdManager != null) {
+        if (nsdManager != null && discoveryListener != null) {
             nsdManager.stopServiceDiscovery(discoveryListener);
+            discoveryListener = null;
         }
     }
 
     /**
      * Set ServiceListener.
+     *
+     * @param serviceListener listener to use
      */
     public static void setServiceListener(ServiceListener serviceListener) {
         ServiceClientHandler.serviceListener = serviceListener;
