@@ -72,6 +72,7 @@ public class RemoteControlActivity extends AppCompatActivity {
         view = binding.getRoot();
         setContentView(view);
 
+        ServiceClientHandler.stop();
         binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), connectionHandler.getIP()));
 
         // Remove tab icons if in landscape

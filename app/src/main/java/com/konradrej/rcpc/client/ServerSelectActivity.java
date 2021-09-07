@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Patterns;
@@ -29,23 +30,26 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the server selection activity.
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.0
+ * @version 1.1
  */
 public class ServerSelectActivity extends AppCompatActivity {
+    private static final String TAG = "ServerSelectActivity";
 
     private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
+    private final Map<String, View> nearbyServers = new HashMap<>();
     private ActivityServerSelectBinding binding;
     private View view;
     private SharedPreferences sharedPreferences;
     private AppDatabase db;
-
     private final ConnectionHandler.onNetworkEventListener networkEventListener =
             new ConnectionHandler.onNetworkEventListener() {
                 @Override
@@ -80,6 +84,8 @@ public class ServerSelectActivity extends AppCompatActivity {
                 public void onError(IOException e) {
                 }
             };
+    private LayoutInflater layoutInflater;
+    private View nearbyServerNoContent = null;
 
     /**
      * Setups the activities view and interaction.
@@ -91,6 +97,7 @@ public class ServerSelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityServerSelectBinding.inflate(getLayoutInflater());
         view = binding.getRoot();
+        layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         setContentView(view);
 
         KeyStore trustStore = null;
@@ -107,6 +114,11 @@ public class ServerSelectActivity extends AppCompatActivity {
 
         connectionHandler.setTruststore(trustStore);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        nearbyServerNoContent = findViewById(R.id.nearbyServerNoContent);
+
+        // Start searching for services offering rcpc host and register listener
+        ServiceClientHandler.setServiceListener(new ServiceListener());
+        ServiceClientHandler.start(getApplicationContext());
 
         // Create/get database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
@@ -138,14 +150,30 @@ public class ServerSelectActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        ServiceClientHandler.stop();
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ServiceClientHandler.start(getApplicationContext());
+    }
+
+
     /**
      * Removes itself as callback for SocketHandler.
      */
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
+        ServiceClientHandler.stop();
         connectionHandler.removeCallback(networkEventListener);
+
+        super.onDestroy();
     }
 
     private void connectToServer(String ip) {
@@ -173,16 +201,14 @@ public class ServerSelectActivity extends AppCompatActivity {
             int entriesAmount = Integer.parseInt(sharedPreferences.getString("connection_history_entries_amount", "15"));
             List<Connection> connections = connectionDAO.getLimitedAmount(entriesAmount);
 
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-
-            if(connections.size() > 0){
+            if (connections.size() > 0) {
                 runOnUiThread(() ->
                         binding.connectionHistoryContainer.removeAllViews());
             }
 
             for (Connection connection : connections) {
                 @SuppressLint("InflateParams")
-                View childLayout = inflater.inflate(R.layout.connection_history_item, null);
+                View childLayout = layoutInflater.inflate(R.layout.connection_history_item, null);
 
                 TextView addressView = childLayout.findViewById(R.id.addressView);
                 addressView.setText(String.format(getString(R.string.connection_history_address_label), connection.ip));
@@ -199,5 +225,62 @@ public class ServerSelectActivity extends AppCompatActivity {
                         binding.connectionHistoryContainer.addView(childLayout));
             }
         }).start();
+    }
+
+    // TODO make connectToServer take port parameter and get it from serviceInfo
+    private void addNearbyServer(NsdServiceInfo serviceInfo) {
+        String serverName = serviceInfo.getHost().getHostName();
+        String serverAddress = serviceInfo.getHost().getHostAddress();
+        String serviceName = serviceInfo.getServiceName();
+
+        runOnUiThread(() -> {
+            if (nearbyServerNoContent != null) {
+                binding.nearbyServersContainer.removeView(nearbyServerNoContent);
+            }
+
+            @SuppressLint("InflateParams")
+            View childLayout = layoutInflater.inflate(R.layout.nearby_servers_item, null);
+
+            TextView serverNameView = childLayout.findViewById(R.id.serverNameView);
+            serverNameView.setText(serverName);
+
+            Button connectButton = childLayout.findViewById(R.id.connectButton);
+            connectButton.setOnClickListener((event) ->
+                    connectToServer(serverAddress));
+
+            binding.nearbyServersContainer.addView(childLayout);
+
+            nearbyServers.put(serviceName, childLayout);
+        });
+    }
+
+    private void removeNearbyServer(NsdServiceInfo serviceInfo) {
+        View view = nearbyServers.remove(serviceInfo.getServiceName());
+
+        if (view != null) {
+            runOnUiThread(() -> {
+                binding.nearbyServersContainer.removeView(view);
+
+                if (binding.nearbyServersContainer.getChildCount() == 0) {
+                    TextView textView = new TextView(getBaseContext());
+                    textView.setText(getResources().getString(R.string.nearby_servers_no_servers_found));
+                    textView.setId(R.id.nearbyServerNoContent);
+
+                    binding.nearbyServersContainer.addView(nearbyServerNoContent);
+                }
+            });
+        }
+    }
+
+    private class ServiceListener implements ServiceClientHandler.ServiceListener {
+        @Override
+        public void onFound(NsdServiceInfo serviceInfo) {
+            addNearbyServer(serviceInfo);
+        }
+
+        @Override
+        public void onLost(NsdServiceInfo serviceInfo) {
+            removeNearbyServer(serviceInfo);
+        }
     }
 }
