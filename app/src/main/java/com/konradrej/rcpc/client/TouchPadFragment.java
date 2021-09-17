@@ -13,14 +13,20 @@ import androidx.transition.Transition;
 
 import com.google.android.material.transition.MaterialSharedAxis;
 import com.konradrej.rcpc.client.View.TouchPadView;
+import com.konradrej.rcpc.core.network.Message;
+import com.konradrej.rcpc.core.network.MessageType;
 import com.konradrej.rcpc.databinding.FragmentTouchPadBinding;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a {@link Fragment} containing a touchpad and relevant controls.
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.0
+ * @version 1.1
+ * @since 1.0
  */
 public class TouchPadFragment extends Fragment {
 
@@ -29,7 +35,9 @@ public class TouchPadFragment extends Fragment {
     private ConnectionHandler connectionHandler;
 
     /**
-     * Required empty constructor
+     * Required empty constructor.
+     *
+     * @since 1.0
      */
     public TouchPadFragment() {
     }
@@ -38,6 +46,7 @@ public class TouchPadFragment extends Fragment {
      * Setups the fragments transitions.
      *
      * @param savedInstanceState saved bundle
+     * @since 1.0
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,7 @@ public class TouchPadFragment extends Fragment {
      * Sets socketHandler.
      *
      * @param connectionHandler the handler to set
+     * @since 1.0
      */
     public void setConnectionHandler(ConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
@@ -68,6 +78,7 @@ public class TouchPadFragment extends Fragment {
      * @param container          view container
      * @param savedInstanceState saved bundle
      * @return the newly setup view
+     * @since 1.0
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -89,6 +100,8 @@ public class TouchPadFragment extends Fragment {
 
     /**
      * Resets binding on view destroy.
+     *
+     * @since 1.0
      */
     @Override
     public void onDestroyView() {
@@ -100,41 +113,66 @@ public class TouchPadFragment extends Fragment {
         binding.touchPadArea.setOnTouchPadEventListener(new TouchPadView.OnTouchPadEventListener() {
             @Override
             public void onMove(float distanceX, float distanceY) {
-                sendMessage("Touchpad: Move Event " + distanceX + " " + distanceY);
+                Map<String, Object> additionalData = new HashMap<>();
+                additionalData.put("distanceX", distanceX);
+                additionalData.put("distanceY", distanceY);
+
+                Message message = new Message(MessageType.ACTION_MOVE, null, additionalData);
+
+                sendMessage(message);
             }
 
             @Override
             public void onScroll(float distanceX, float distanceY) {
-                sendMessage("Touchpad: Scroll Event " + distanceX + " " + distanceY);
+                Map<String, Object> additionalData = new HashMap<>();
+                if (Math.abs(distanceX) > Math.abs(distanceY)) {
+                    additionalData.put("distanceX", distanceX);
+                    additionalData.put("distanceY", 0f);
+                } else {
+                    additionalData.put("distanceX", 0f);
+                    additionalData.put("distanceY", distanceY);
+                }
+
+
+                Message message = new Message(MessageType.ACTION_SCROLL, null, additionalData);
+
+                sendMessage(message);
             }
 
             @Override
             public void onLeftClick() {
-                sendMessage("Touchpad: Left Click");
+                sendMessage(new Message(MessageType.ACTION_PRIMARY_CLICK));
             }
 
             @Override
             public void onRightClick() {
-                sendMessage("Touchpad: Right Click");
+                sendMessage(new Message(MessageType.ACTION_SECONDARY_CLICK));
             }
         });
     }
 
     private void setupScrollBar() {
-        binding.scrollBarArea.setOnScrollBarEventListener(((distanceX, distanceY) ->
-                sendMessage("Scrollbar: Scroll Event " + distanceX + " " + distanceY)));
+        binding.scrollBarArea.setOnScrollBarEventListener(((distanceX, distanceY) -> {
+            Map<String, Object> additionalData = new HashMap<>();
+            additionalData.put("distanceX", 0f);
+            additionalData.put("distanceY", distanceY);
+
+            Message message = new Message(MessageType.ACTION_SCROLL, null, additionalData);
+
+            sendMessage(message);
+        }));
     }
 
     private void setupButtons() {
         binding.leftButtonArea.setOnClickListener((event) ->
-                sendMessage("Button: Left Click"));
+                sendMessage(new Message(MessageType.ACTION_PRIMARY_CLICK)));
         binding.middleButtonArea.setOnClickListener((event) ->
-                sendMessage("Button: Middle Click"));
+                sendMessage(new Message(MessageType.ACTION_MIDDLE_CLICK)));
         binding.rightButtonArea.setOnClickListener((event) ->
-                sendMessage("Button: Right Click"));
+                sendMessage(new Message(MessageType.ACTION_SECONDARY_CLICK)));
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(Message message) {
         if (connectionHandler != null) {
             connectionHandler.sendMessage(message);
         }

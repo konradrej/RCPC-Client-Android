@@ -1,7 +1,9 @@
 package com.konradrej.rcpc.client;
 
-import java.io.DataOutputStream;
+import com.konradrej.rcpc.core.network.Message;
+
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
@@ -56,7 +58,7 @@ public class ConnectionHandler {
      *
      * @param message message to send
      */
-    public synchronized void sendMessage(String message) {
+    public synchronized void sendMessage(Message message) {
         socketHandler.messageQueue.add(message);
     }
 
@@ -163,7 +165,7 @@ public class ConnectionHandler {
     }
 
     private class SocketHandler implements Runnable {
-        private final Deque<String> messageQueue = new ArrayDeque<>();
+        private final Deque<Message> messageQueue = new ArrayDeque<>();
         private boolean disconnect = false;
         private String ip = null;
         private KeyStore keyStore;
@@ -190,11 +192,11 @@ public class ConnectionHandler {
 
                     notifyListener(NetworkEvent.CONNECT, null);
 
-                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                    ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
                     while (!disconnect) {
                         if (!messageQueue.isEmpty()) {
-                            out.writeUTF(messageQueue.removeFirst());
+                            out.writeObject(messageQueue.removeFirst());
                         }
                     }
                 } catch (SocketTimeoutException e) {
@@ -205,8 +207,6 @@ public class ConnectionHandler {
                     disconnect = false;
                     notifyListener(NetworkEvent.DISCONNECT, null);
                 }
-
-
             } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
                 e.printStackTrace();
             }

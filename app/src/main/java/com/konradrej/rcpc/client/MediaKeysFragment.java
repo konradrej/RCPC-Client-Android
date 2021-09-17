@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.transition.Transition;
 
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.konradrej.rcpc.core.network.Message;
+import com.konradrej.rcpc.core.network.MessageType;
 import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 
 /**
@@ -87,21 +89,21 @@ public class MediaKeysFragment extends Fragment {
 
     private void setupButtons() {
         binding.stopButton.setOnClickListener((event) ->
-                sendMessage("Stop Button: Click"));
+                sendMessage(new Message(MessageType.ACTION_STOP)));
         binding.playPauseButton.setOnClickListener((event) ->
-                sendMessage("Play/Pause Button: Click"));
+                sendMessage(new Message(MessageType.ACTION_PLAY_PAUSE)));
         binding.previousButton.setOnClickListener((event) ->
-                sendMessage("Previous Button: Click"));
+                sendMessage(new Message(MessageType.ACTION_PREVIOUS_TRACK)));
         binding.nextButton.setOnClickListener((event) ->
-                sendMessage("Next Button: Click"));
+                sendMessage(new Message(MessageType.ACTION_NEXT_TRACK)));
     }
 
     private void setupSlider() {
         binding.volumeSlider.addOnChangeListener((slider, value, fromUser) ->
-                sendMessage("Volume Slider: Change Volume to " + value));
+                sendMessage(new Message(MessageType.ACTION_SET_VOLUME, value)));
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(Message message) {
         if (connectionHandler != null) {
             connectionHandler.sendMessage(message);
         }
