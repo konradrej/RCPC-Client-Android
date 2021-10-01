@@ -14,7 +14,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.databinding.ActivityRemoteControlBinding;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,8 @@ import java.util.List;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.0
+ * @version 1.1
+ * @since 1.0
  */
 public class RemoteControlActivity extends AppCompatActivity {
 
@@ -39,6 +39,10 @@ public class RemoteControlActivity extends AppCompatActivity {
                 }
 
                 @Override
+                public void onRefused() {
+                }
+
+                @Override
                 public void onDisconnect() {
                 }
 
@@ -47,7 +51,7 @@ public class RemoteControlActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(IOException e) {
+                public void onError(Exception e) {
                     runOnUiThread(() -> {
                         MaterialAlertDialogBuilder dialogBuilder =
                                 new MaterialAlertDialogBuilder(view.getContext());
@@ -64,6 +68,7 @@ public class RemoteControlActivity extends AppCompatActivity {
      * Setups the activities view and interaction.
      *
      * @param savedInstanceState saved bundle
+     * @since 1.0
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +98,8 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     /**
      * Removes itself as callback for SocketHandler.
+     *
+     * @since 1.0
      */
     @Override
     protected void onDestroy() {
@@ -105,6 +112,7 @@ public class RemoteControlActivity extends AppCompatActivity {
      * Saves the current instances state to bundle.
      *
      * @param savedInstanceState bundle to save to
+     * @since 1.0
      */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
