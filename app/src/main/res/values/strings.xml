@@ -46,4 +46,6 @@
     <string name="could_not_connect_title">Could not connect</string>
     <string name="could_not_connect_body">The IP address could not be reached, make sure the server is started and that the IP address is correct</string>
     <string name="an_error_occurred_title">An error occurred</string>
+    <string name="user_refused_connection_title">User refused connection</string>
+    <string name="user_refused_connection_body">The user declined the connection request.</string>
 </resources>
