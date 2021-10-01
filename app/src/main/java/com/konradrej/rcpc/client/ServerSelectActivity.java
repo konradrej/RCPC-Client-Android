@@ -39,7 +39,8 @@ import java.util.Map;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
+ * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
     private static final String TAG = "ServerSelectActivity";
@@ -64,6 +65,19 @@ public class ServerSelectActivity extends AppCompatActivity {
                 }
 
                 @Override
+                public void onRefused() {
+                    runOnUiThread(() -> {
+                        binding.connectionStatusIndicator.hide();
+
+                        new MaterialAlertDialogBuilder(view.getContext())
+                                .setTitle(getString(R.string.user_refused_connection_title))
+                                .setMessage(getString(R.string.user_refused_connection_body))
+                                .setNeutralButton(getString(R.string.neutral_response_ok), null)
+                                .show();
+                    });
+                }
+
+                @Override
                 public void onDisconnect() {
                 }
 
@@ -81,7 +95,7 @@ public class ServerSelectActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(IOException e) {
+                public void onError(Exception e) {
                 }
             };
     private LayoutInflater layoutInflater;
@@ -91,6 +105,7 @@ public class ServerSelectActivity extends AppCompatActivity {
      * Setups the activities view and interaction.
      *
      * @param savedInstanceState saved bundle
+     * @since 1.0
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +115,23 @@ public class ServerSelectActivity extends AppCompatActivity {
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         setContentView(view);
 
-        KeyStore trustStore = null;
-        Context context = getApplicationContext();
+        KeyStore keyStore = null;
         try {
-            trustStore = KeyStore.getInstance("PKCS12");
-            trustStore.load(context.getResources().openRawResource(
-                    context.getResources().getIdentifier("truststore_new",
-                            "raw", context.getPackageName())), "".toCharArray());//TODO Password management
-
+            keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(getResources().openRawResource(R.raw.client_keystore), "UX6eCJ2%zue".toCharArray());
         } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
+        KeyStore trustStore = null;
+        try {
+            trustStore = KeyStore.getInstance("PKCS12");
+            trustStore.load(getResources().openRawResource(R.raw.client_truststore), "UX6eCJ2%zue".toCharArray());
+        } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        connectionHandler.setKeyStore(keyStore);
         connectionHandler.setTruststore(trustStore);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nearbyServerNoContent = findViewById(R.id.nearbyServerNoContent);
@@ -150,6 +170,11 @@ public class ServerSelectActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Stops searching for service on pause.
+     *
+     * @since 1.0
+     */
     @Override
     protected void onPause() {
         ServiceClientHandler.stop();
@@ -157,6 +182,11 @@ public class ServerSelectActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    /**
+     * Starts searching for service on resume.
+     *
+     * @since 1.0
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -167,6 +197,8 @@ public class ServerSelectActivity extends AppCompatActivity {
 
     /**
      * Removes itself as callback for SocketHandler.
+     *
+     * @since 1.0
      */
     @Override
     protected void onDestroy() {
