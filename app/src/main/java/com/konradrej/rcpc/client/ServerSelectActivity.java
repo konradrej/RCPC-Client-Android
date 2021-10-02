@@ -1,7 +1,6 @@
 package com.konradrej.rcpc.client;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.nsd.NsdServiceInfo;
@@ -25,14 +24,17 @@ import com.konradrej.rcpc.client.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents the server selection activity.
@@ -45,6 +47,7 @@ import java.util.Map;
 public class ServerSelectActivity extends AppCompatActivity {
     private static final String TAG = "ServerSelectActivity";
 
+    private final Set<InetAddress> currentServers = new HashSet<>();
     private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private final Map<String, View> nearbyServers = new HashMap<>();
     private ActivityServerSelectBinding binding;
@@ -261,6 +264,11 @@ public class ServerSelectActivity extends AppCompatActivity {
 
     // TODO make connectToServer take port parameter and get it from serviceInfo
     private void addNearbyServer(NsdServiceInfo serviceInfo) {
+        if (currentServers.contains(serviceInfo.getHost())) {
+            return;
+        }
+
+        currentServers.add(serviceInfo.getHost());
         String serverName = serviceInfo.getHost().getHostName();
         String serverAddress = serviceInfo.getHost().getHostAddress();
         String serviceName = serviceInfo.getServiceName();
