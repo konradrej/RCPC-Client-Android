@@ -14,7 +14,8 @@ import androidx.core.view.GestureDetectorCompat;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.0
+ * @version 1.1
+ * @since 1.0
  */
 public class TouchPadView extends View implements
         View.OnTouchListener,
@@ -25,11 +26,15 @@ public class TouchPadView extends View implements
     private OnTouchPadEventListener onTouchPadEventListener = null;
     private GestureDetectorCompat gestureDetector;
     private boolean ignoreFirstScrollEvent = true;
+    private boolean isDoubleClickHold = false;
+    private float lastDragX;
+    private float lastDragY;
 
     /**
      * Simple constructor to use when creating a view from code.
      *
      * @param context view context
+     * @since 1.0
      */
     public TouchPadView(Context context) {
         super(context);
@@ -41,6 +46,7 @@ public class TouchPadView extends View implements
      *
      * @param context view context
      * @param attrs   attributes to use
+     * @since 1.0
      */
     public TouchPadView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -53,6 +59,7 @@ public class TouchPadView extends View implements
      * @param context      view context
      * @param attrs        attributes to use
      * @param defStyleAttr base style to apply
+     * @since 1.0
      */
     public TouchPadView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -68,6 +75,7 @@ public class TouchPadView extends View implements
      * Set onTouchListener.
      *
      * @param listener listener to set
+     * @since 1.0
      */
     @Override
     public void setOnTouchListener(OnTouchListener listener) {
@@ -78,6 +86,7 @@ public class TouchPadView extends View implements
      * Set onTouchPadEventListener.
      *
      * @param listener listener to set
+     * @since 1.0
      */
     public void setOnTouchPadEventListener(OnTouchPadEventListener listener) {
         onTouchPadEventListener = listener;
@@ -88,6 +97,7 @@ public class TouchPadView extends View implements
      *
      * @param e ignored
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -98,26 +108,25 @@ public class TouchPadView extends View implements
     }
 
     /**
-     * Calls touchPadEventListener callback on doubleTap.
+     * Not in use, implemented cause of interface requirement.
      *
      * @param e ignored
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        if (onTouchPadEventListener != null) {
-            onTouchPadEventListener.onRightClick();
-        }
-
         return true;
     }
 
     /**
-     * Calls onTouchListener and gestureDetector.
+     * Calls onTouchListener and gestureDetector. Also handles drag and click
+     * move event, see {@link #onDoubleTapEvent(MotionEvent)} for why.
      *
      * @param v     event source view
      * @param event the motion event
      * @return true if event was consumed, false if not
+     * @since 1.0
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -127,6 +136,10 @@ public class TouchPadView extends View implements
             consumed = wrappedOnTouchListener.onTouch(v, event);
 
         consumed |= gestureDetector.onTouchEvent(event);
+
+        if (isDoubleClickHold && event.getAction() == MotionEvent.ACTION_MOVE) {
+            sendClickDragMove(event);
+        }
 
         return consumed;
     }
@@ -139,6 +152,7 @@ public class TouchPadView extends View implements
      * @param distanceX x distance between events
      * @param distanceY y distance between events
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -161,21 +175,40 @@ public class TouchPadView extends View implements
     }
 
     /**
-     * Not in use, implemented cause of interface requirement.
+     * Handles click and drag start and stop. Click and drag move is handled
+     * in onTouch to avoid batching and therefore laggy behaviour.
      *
-     * @param e ignored
+     * @param e the motion event
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
+        if (onTouchPadEventListener != null) {
+            if (e.getAction() == MotionEvent.ACTION_DOWN) {
+                isDoubleClickHold = true;
+                onTouchPadEventListener.onClickDragStart();
+
+                lastDragX = e.getX();
+                lastDragY = e.getY();
+            } else if (e.getAction() == MotionEvent.ACTION_UP) {
+                isDoubleClickHold = false;
+
+                sendClickDragMove(e);
+
+                onTouchPadEventListener.onClickDragEnd();
+            }
+        }
+
         return true;
     }
 
     /**
-     * TODO
+     * Sets ignore first click to true.
      *
      * @param e ignored
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onDown(MotionEvent e) {
@@ -187,6 +220,7 @@ public class TouchPadView extends View implements
      * Not in use, implemented cause of interface requirement.
      *
      * @param e ignored
+     * @since 1.0
      */
     @Override
     public void onShowPress(MotionEvent e) {
@@ -197,6 +231,7 @@ public class TouchPadView extends View implements
      *
      * @param e ignored
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
@@ -207,6 +242,7 @@ public class TouchPadView extends View implements
      * Not in use, implemented cause of interface requirement.
      *
      * @param e ignored
+     * @since 1.0
      */
     @Override
     public void onLongPress(MotionEvent e) {
@@ -220,14 +256,27 @@ public class TouchPadView extends View implements
      * @param velocityX ignored
      * @param velocityY ignored
      * @return true
+     * @since 1.0
      */
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return true;
     }
 
+    private void sendClickDragMove(MotionEvent e) {
+        float distanceX = lastDragX - e.getX();
+        float distanceY = lastDragY - e.getY();
+
+        lastDragX = e.getX();
+        lastDragY = e.getY();
+
+        onTouchPadEventListener.onClickDragMove(distanceX, distanceY);
+    }
+
     /**
      * Callback interface for touchpad events.
+     *
+     * @since 1.0
      */
     public interface OnTouchPadEventListener {
         void onMove(float distanceX, float distanceY);
@@ -237,5 +286,11 @@ public class TouchPadView extends View implements
         void onLeftClick();
 
         void onRightClick();
+
+        void onClickDragStart();
+
+        void onClickDragMove(float distanceX, float distanceY);
+
+        void onClickDragEnd();
     }
 }
