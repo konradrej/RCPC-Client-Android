@@ -124,7 +124,7 @@ public class ScrollBarView extends View implements
     }
 
     /**
-     * TODO
+     * Sets ignore first click to true.
      *
      * @param e ignored
      * @return true
