@@ -32,7 +32,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -236,6 +236,11 @@ public class ConnectionHandler {
                                 out.writeObject(messageQueue.removeFirst());
                             }
                         }
+
+                        Message outMessage = new Message(MessageType.INFO_USER_CLOSED_CONNECTION);
+
+                        out.writeObject(outMessage);
+                        out.flush();
                     } else if (message.getMessageType() == MessageType.INFO_USER_CLOSED_CONNECTION) {
                         notifyListener(NetworkEvent.REFUSED);
                     } else {
