@@ -1,5 +1,6 @@
 package com.konradrej.rcpc.client;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.konradrej.rcpc.core.network.Message;
@@ -20,6 +21,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -32,7 +34,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -42,6 +44,7 @@ public class ConnectionHandler {
     private SocketHandler socketHandler = null;
     private KeyStore keyStore;
     private KeyStore trustStore;
+    private SharedPreferences sharedPreferences = null;
 
     private ConnectionHandler() {
 
@@ -72,12 +75,31 @@ public class ConnectionHandler {
         socketHandler.messageQueue.add(message);
     }
 
+    /**
+     * Sets keystore to given value.
+     *
+     * @param keyStore the given value
+     */
     public void setKeyStore(KeyStore keyStore) {
         this.keyStore = keyStore;
     }
 
+    /**
+     * Sets truststore to given value.
+     *
+     * @param trustStore the given value
+     */
     public void setTruststore(KeyStore trustStore) {
         this.trustStore = trustStore;
+    }
+
+    /**
+     * Sets shared preferences to given value.
+     *
+     * @param sharedPreferences the given value
+     */
+    public void setSharedPreferences(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
     }
 
     /**
@@ -230,6 +252,36 @@ public class ConnectionHandler {
                     Message message = (Message) in.readObject();
                     if (message.getMessageType() == MessageType.INFO_USER_ACCEPTED_CONNECTION) {
                         notifyListener(NetworkEvent.CONNECT);
+
+                        new Thread(() -> {
+                            try {
+                                while (!socket.isInputShutdown()) {
+                                    Message receivedMessage = (Message) in.readObject();
+
+                                    switch (receivedMessage.getMessageType()) {
+                                        case ACTION_GET_UUID:
+                                            String guid;
+                                            String guidKey = "app_instance_guid";
+
+                                            if (sharedPreferences.contains(guidKey)) {
+                                                guid = sharedPreferences.getString(guidKey, "");
+                                            } else {
+                                                guid = UUID.randomUUID().toString();
+                                                sharedPreferences.edit().putString(guidKey, guid).apply();
+                                            }
+
+                                            messageQueue.add(new Message(MessageType.INFO_UUID, guid));
+                                            break;
+                                        default:
+                                            Log.e(TAG, "Message type not implemented: " + receivedMessage.getMessageType());
+                                    }
+                                }
+                            } catch (IOException | ClassNotFoundException e) {
+                                if (!disconnect) {
+                                    notifyListener(NetworkEvent.ERROR, e);
+                                }
+                            }
+                        }).start();
 
                         while (!disconnect) {
                             if (!messageQueue.isEmpty()) {

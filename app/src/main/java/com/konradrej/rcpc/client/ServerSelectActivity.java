@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
@@ -134,10 +134,12 @@ public class ServerSelectActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        connectionHandler.setKeyStore(keyStore);
-        connectionHandler.setTruststore(trustStore);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nearbyServerNoContent = findViewById(R.id.nearbyServerNoContent);
+
+        connectionHandler.setKeyStore(keyStore);
+        connectionHandler.setTruststore(trustStore);
+        connectionHandler.setSharedPreferences(sharedPreferences);
 
         // Start searching for services offering rcpc host and register listener
         ServiceClientHandler.setServiceListener(new ServiceListener());
