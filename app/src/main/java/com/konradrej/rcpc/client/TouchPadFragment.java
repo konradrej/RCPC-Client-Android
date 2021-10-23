@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class TouchPadFragment extends Fragment {
@@ -147,6 +147,27 @@ public class TouchPadFragment extends Fragment {
             @Override
             public void onRightClick() {
                 sendMessage(new Message(MessageType.ACTION_SECONDARY_CLICK));
+            }
+
+            @Override
+            public void onClickDragStart() {
+                sendMessage(new Message((MessageType.ACTION_CLICK_AND_DRAG_START)));
+            }
+
+            @Override
+            public void onClickDragMove(float distanceX, float distanceY) {
+                Map<String, Object> additionalData = new HashMap<>();
+                additionalData.put("distanceX", distanceX);
+                additionalData.put("distanceY", distanceY);
+
+                Message message = new Message(MessageType.ACTION_CLICK_AND_DRAG_MOVE, null, additionalData);
+
+                sendMessage(message);
+            }
+
+            @Override
+            public void onClickDragEnd() {
+                sendMessage(new Message((MessageType.ACTION_CLICK_AND_DRAG_END)));
             }
         });
     }
