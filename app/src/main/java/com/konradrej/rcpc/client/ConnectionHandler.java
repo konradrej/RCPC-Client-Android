@@ -34,7 +34,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.3
+ * @version 1.4
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -249,6 +249,8 @@ public class ConnectionHandler {
                     ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+                    out.writeObject(getGuidMessage());
+
                     Message message = (Message) in.readObject();
                     if (message.getMessageType() == MessageType.INFO_USER_ACCEPTED_CONNECTION) {
                         notifyListener(NetworkEvent.CONNECT);
@@ -260,17 +262,7 @@ public class ConnectionHandler {
 
                                     switch (receivedMessage.getMessageType()) {
                                         case ACTION_GET_UUID:
-                                            String guid;
-                                            String guidKey = "app_instance_guid";
-
-                                            if (sharedPreferences.contains(guidKey)) {
-                                                guid = sharedPreferences.getString(guidKey, "");
-                                            } else {
-                                                guid = UUID.randomUUID().toString();
-                                                sharedPreferences.edit().putString(guidKey, guid).apply();
-                                            }
-
-                                            messageQueue.add(new Message(MessageType.INFO_UUID, guid));
+                                            messageQueue.add(getGuidMessage());
                                             break;
                                         default:
                                             Log.e(TAG, "Message type not implemented: " + receivedMessage.getMessageType());
@@ -309,6 +301,20 @@ public class ConnectionHandler {
             } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException e) {
                 Log.d(TAG, "Error: " + e.getLocalizedMessage());
             }
+        }
+
+        private Message getGuidMessage() {
+            String guid;
+            String guidKey = "app_instance_guid";
+
+            if (sharedPreferences.contains(guidKey)) {
+                guid = sharedPreferences.getString(guidKey, "");
+            } else {
+                guid = UUID.randomUUID().toString();
+                sharedPreferences.edit().putString(guidKey, guid).apply();
+            }
+
+            return new Message(MessageType.INFO_UUID, guid);
         }
     }
 }
