@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class RemoteControlActivity extends AppCompatActivity {
@@ -44,6 +44,7 @@ public class RemoteControlActivity extends AppCompatActivity {
 
                 @Override
                 public void onDisconnect() {
+                    endRemoteControl();
                 }
 
                 @Override

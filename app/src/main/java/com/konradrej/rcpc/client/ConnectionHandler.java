@@ -34,7 +34,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.4
+ * @version 1.5
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -263,6 +263,9 @@ public class ConnectionHandler {
                                     switch (receivedMessage.getMessageType()) {
                                         case ACTION_GET_UUID:
                                             messageQueue.add(getGuidMessage());
+                                            break;
+                                        case INFO_USER_CLOSED_CONNECTION:
+                                            notifyListener(NetworkEvent.DISCONNECT);
                                             break;
                                         default:
                                             Log.e(TAG, "Message type not implemented: " + receivedMessage.getMessageType());
