@@ -19,7 +19,8 @@ import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.0
+ * @version 1.1
+ * @since 1.0
  */
 public class MediaKeysFragment extends Fragment {
 
@@ -27,7 +28,9 @@ public class MediaKeysFragment extends Fragment {
     private ConnectionHandler connectionHandler;
 
     /**
-     * Required empty constructor
+     * Required empty constructor.
+     *
+     * @since 1.0
      */
     public MediaKeysFragment() {
     }
@@ -36,6 +39,7 @@ public class MediaKeysFragment extends Fragment {
      * Setups the fragments transitions.
      *
      * @param savedInstanceState saved bundle
+     * @since 1.0
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,7 @@ public class MediaKeysFragment extends Fragment {
      * Sets socketHandler.
      *
      * @param connectionHandler the handler to set
+     * @since 1.0
      */
     public void setConnectionHandler(ConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
@@ -64,6 +69,7 @@ public class MediaKeysFragment extends Fragment {
      * @param container          view container
      * @param savedInstanceState saved bundle
      * @return the newly setup view
+     * @since 1.0
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -80,6 +86,8 @@ public class MediaKeysFragment extends Fragment {
 
     /**
      * Resets binding on view destroy.
+     *
+     * @since 1.0
      */
     @Override
     public void onDestroyView() {
@@ -99,8 +107,11 @@ public class MediaKeysFragment extends Fragment {
     }
 
     private void setupSlider() {
-        binding.volumeSlider.addOnChangeListener((slider, value, fromUser) ->
-                sendMessage(new Message(MessageType.ACTION_SET_VOLUME, value)));
+        binding.volumeSlider.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                sendMessage(new Message(MessageType.ACTION_SET_VOLUME, value));
+            }
+        });
     }
 
     private void sendMessage(Message message) {
