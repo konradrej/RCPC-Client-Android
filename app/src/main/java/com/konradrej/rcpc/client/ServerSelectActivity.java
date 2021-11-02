@@ -40,7 +40,7 @@ import java.util.Set;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.4
+ * @version 1.5
  * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
@@ -207,7 +207,7 @@ public class ServerSelectActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         ServiceClientHandler.stop();
-        connectionHandler.removeCallback(networkEventListener);
+        connectionHandler.removeNetworkEventCallback(networkEventListener);
 
         super.onDestroy();
     }

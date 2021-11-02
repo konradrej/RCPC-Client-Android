@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class RemoteControlActivity extends AppCompatActivity {
@@ -106,7 +106,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        connectionHandler.removeCallback(networkEventListener);
+        connectionHandler.removeNetworkEventCallback(networkEventListener);
     }
 
     /**
@@ -150,7 +150,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void setupErrorHandling() {
-        connectionHandler.addCallback(networkEventListener);
+        connectionHandler.addNetworkEventCallback(networkEventListener);
     }
 
     private void setupNavigation() {
