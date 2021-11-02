@@ -34,13 +34,14 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.5
+ * @version 1.6
  * @since 1.0
  */
 public class ConnectionHandler {
     private static final String TAG = "ConnectionHandler";
     private static ConnectionHandler singleInstance = null;
     private final Set<onNetworkEventListener> onNetworkEventListeners = new HashSet<>();
+    private final Set<onNetworkMessageListener> onNetworkMessageListeners = new HashSet<>();
     private SocketHandler socketHandler = null;
     private KeyStore keyStore;
     private KeyStore trustStore;
@@ -119,7 +120,7 @@ public class ConnectionHandler {
         socketHandler.keyStore = keyStore;
         socketHandler.trustStore = trustStore;
 
-        addCallback(networkEventListener);
+        addNetworkEventCallback(networkEventListener);
 
         new Thread(socketHandler).start();
     }
@@ -149,8 +150,18 @@ public class ConnectionHandler {
      * @param onNetworkEventListener instance of onNetworkEventListener to add
      * @since 1.0
      */
-    public void addCallback(onNetworkEventListener onNetworkEventListener) {
+    public void addNetworkEventCallback(onNetworkEventListener onNetworkEventListener) {
         this.onNetworkEventListeners.add(onNetworkEventListener);
+    }
+
+    /**
+     * Adds onNetworkMessageListener callback.
+     *
+     * @param onNetworkMessageListener instance of onNetworkMessageListener to add
+     * @since 1.0
+     */
+    public void addNetworkMessageCallback(onNetworkMessageListener onNetworkMessageListener) {
+        this.onNetworkMessageListeners.add(onNetworkMessageListener);
     }
 
     /**
@@ -159,11 +170,21 @@ public class ConnectionHandler {
      * @param onNetworkEventListener instance of onNetworkEventListener to remove
      * @since 1.0
      */
-    public void removeCallback(onNetworkEventListener onNetworkEventListener) {
+    public void removeNetworkEventCallback(onNetworkEventListener onNetworkEventListener) {
         this.onNetworkEventListeners.remove(onNetworkEventListener);
     }
 
-    private void notifyListener(NetworkEvent event) {
+    /**
+     * Removes onNetworkMessageListener callback.
+     *
+     * @param onNetworkMessageListener instance of onNetworkMessageListener to remove
+     * @since 1.0
+     */
+    public void removeNetworkMessageCallback(onNetworkMessageListener onNetworkMessageListener) {
+        this.onNetworkMessageListeners.remove(onNetworkMessageListener);
+    }
+
+    private void notifyEventListeners(NetworkEvent event) {
         for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners) {
             switch (event) {
                 case CONNECT:
@@ -182,13 +203,19 @@ public class ConnectionHandler {
         }
     }
 
-    private void notifyListener(NetworkEvent event, Exception errorException) {
+    private void notifyEventListeners(NetworkEvent event, Exception errorException) {
         for (onNetworkEventListener onNetworkEventListener : onNetworkEventListeners) {
             switch (event) {
                 case ERROR:
                     onNetworkEventListener.onError(errorException);
                     break;
             }
+        }
+    }
+
+    private void notifyMessageListeners(Message message) {
+        for (onNetworkMessageListener onNetworkMessageListener : onNetworkMessageListeners) {
+            onNetworkMessageListener.onReceivedMessage(message);
         }
     }
 
@@ -215,6 +242,15 @@ public class ConnectionHandler {
         void onConnectTimeout();
 
         void onError(Exception e);
+    }
+
+    /**
+     * Callback interface for network messages.
+     *
+     * @since 1.0
+     */
+    public interface onNetworkMessageListener {
+        void onReceivedMessage(Message message);
     }
 
     private class SocketHandler implements Runnable {
@@ -253,19 +289,20 @@ public class ConnectionHandler {
 
                     Message message = (Message) in.readObject();
                     if (message.getMessageType() == MessageType.INFO_USER_ACCEPTED_CONNECTION) {
-                        notifyListener(NetworkEvent.CONNECT);
+                        notifyEventListeners(NetworkEvent.CONNECT);
 
                         new Thread(() -> {
                             try {
                                 while (!socket.isInputShutdown()) {
                                     Message receivedMessage = (Message) in.readObject();
+                                    notifyMessageListeners(receivedMessage);
 
                                     switch (receivedMessage.getMessageType()) {
                                         case ACTION_GET_UUID:
                                             messageQueue.add(getGuidMessage());
                                             break;
                                         case INFO_USER_CLOSED_CONNECTION:
-                                            notifyListener(NetworkEvent.DISCONNECT);
+                                            notifyEventListeners(NetworkEvent.DISCONNECT);
                                             break;
                                         default:
                                             Log.e(TAG, "Message type not implemented: " + receivedMessage.getMessageType());
@@ -273,7 +310,7 @@ public class ConnectionHandler {
                                 }
                             } catch (IOException | ClassNotFoundException e) {
                                 if (!disconnect) {
-                                    notifyListener(NetworkEvent.ERROR, e);
+                                    notifyEventListeners(NetworkEvent.ERROR, e);
                                 }
                             }
                         }).start();
@@ -289,17 +326,17 @@ public class ConnectionHandler {
                         out.writeObject(outMessage);
                         out.flush();
                     } else if (message.getMessageType() == MessageType.INFO_USER_CLOSED_CONNECTION) {
-                        notifyListener(NetworkEvent.REFUSED);
+                        notifyEventListeners(NetworkEvent.REFUSED);
                     } else {
-                        notifyListener(NetworkEvent.ERROR, new Exception("Invalid message type, server or client is probably outdated."));
+                        notifyEventListeners(NetworkEvent.ERROR, new Exception("Invalid message type, server or client is probably outdated."));
                     }
                 } catch (SocketTimeoutException e) {
-                    notifyListener(NetworkEvent.TIMEOUT);
+                    notifyEventListeners(NetworkEvent.TIMEOUT);
                 } catch (IOException | ClassNotFoundException e) {
-                    notifyListener(NetworkEvent.ERROR, e);
+                    notifyEventListeners(NetworkEvent.ERROR, e);
                 } finally {
                     disconnect = false;
-                    notifyListener(NetworkEvent.DISCONNECT);
+                    notifyEventListeners(NetworkEvent.DISCONNECT);
                 }
             } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException e) {
                 Log.d(TAG, "Error: " + e.getLocalizedMessage());

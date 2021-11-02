@@ -15,16 +15,25 @@ import com.konradrej.rcpc.core.network.MessageType;
 import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 
 /**
- * Represents a {@link Fragment} containing a media keys.
+ * Represents a {@link Fragment} containing media keys.
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class MediaKeysFragment extends Fragment {
-
     private FragmentMediaKeysBinding binding;
+    private final ConnectionHandler.onNetworkMessageListener networkMessageListener = new ConnectionHandler.onNetworkMessageListener() {
+        @Override
+        public void onReceivedMessage(Message message) {
+            if (message.getMessageType() == MessageType.INFO_CURRENT_VOLUME_UPDATE) {
+                float volume = ((Float) message.getMessageData()) * 100;
+
+                binding.volumeSlider.setValue(volume);
+            }
+        }
+    };
     private ConnectionHandler connectionHandler;
 
     /**
@@ -81,6 +90,9 @@ public class MediaKeysFragment extends Fragment {
         setupButtons();
         setupSlider();
 
+        connectionHandler.addNetworkMessageCallback(networkMessageListener);
+        sendMessage(new Message(MessageType.ACTION_GET_CURRENT_VOLUME));
+
         return view;
     }
 
@@ -91,6 +103,7 @@ public class MediaKeysFragment extends Fragment {
      */
     @Override
     public void onDestroyView() {
+        connectionHandler.removeNetworkMessageCallback(networkMessageListener);
         super.onDestroyView();
         binding = null;
     }
