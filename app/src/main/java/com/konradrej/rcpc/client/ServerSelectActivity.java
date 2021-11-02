@@ -24,7 +24,6 @@ import com.konradrej.rcpc.client.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -41,13 +40,13 @@ import java.util.Set;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.3
+ * @version 1.4
  * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
     private static final String TAG = "ServerSelectActivity";
 
-    private final Set<InetAddress> currentServers = new HashSet<>();
+    private final Set<String> currentServers = new HashSet<>();
     private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private final Map<String, View> nearbyServers = new HashMap<>();
     private ActivityServerSelectBinding binding;
@@ -266,11 +265,11 @@ public class ServerSelectActivity extends AppCompatActivity {
 
     // TODO make connectToServer take port parameter and get it from serviceInfo
     private void addNearbyServer(NsdServiceInfo serviceInfo) {
-        if (currentServers.contains(serviceInfo.getHost())) {
+        if (currentServers.contains(serviceInfo.getServiceName())) {
             return;
         }
 
-        currentServers.add(serviceInfo.getHost());
+        currentServers.add(serviceInfo.getServiceName());
         String serverName = serviceInfo.getHost().getHostName();
         String serverAddress = serviceInfo.getHost().getHostAddress();
         String serviceName = serviceInfo.getServiceName();
@@ -298,6 +297,7 @@ public class ServerSelectActivity extends AppCompatActivity {
 
     private void removeNearbyServer(NsdServiceInfo serviceInfo) {
         View view = nearbyServers.remove(serviceInfo.getServiceName());
+        currentServers.remove(serviceInfo.getServiceName());
 
         if (view != null) {
             runOnUiThread(() -> {
