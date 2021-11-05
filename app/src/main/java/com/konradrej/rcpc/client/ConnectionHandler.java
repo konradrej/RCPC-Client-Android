@@ -264,7 +264,7 @@ public class ConnectionHandler {
         public void run() {
             try {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                kmf.init(keyStore, "***REMOVED***".toCharArray());
+                kmf.init(keyStore, "".toCharArray());
 
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 tmf.init(trustStore);
