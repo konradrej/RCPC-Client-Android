@@ -120,7 +120,7 @@ public class ServerSelectActivity extends AppCompatActivity {
         KeyStore keyStore = null;
         try {
             keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(getResources().openRawResource(R.raw.client_keystore), "***REMOVED***".toCharArray());
+            keyStore.load(getResources().openRawResource(R.raw.client_keystore), "".toCharArray());
         } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -128,7 +128,7 @@ public class ServerSelectActivity extends AppCompatActivity {
         KeyStore trustStore = null;
         try {
             trustStore = KeyStore.getInstance("PKCS12");
-            trustStore.load(getResources().openRawResource(R.raw.client_truststore), "***REMOVED***".toCharArray());
+            trustStore.load(getResources().openRawResource(R.raw.client_truststore), "".toCharArray());
         } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
