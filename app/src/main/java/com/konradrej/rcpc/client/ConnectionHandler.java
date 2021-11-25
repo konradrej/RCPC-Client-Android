@@ -1,8 +1,10 @@
 package com.konradrej.rcpc.client;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.konradrej.rcpc.R;
 import com.konradrej.rcpc.core.network.Message;
 import com.konradrej.rcpc.core.network.MessageType;
 
@@ -17,9 +19,11 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,7 +38,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.6
+ * @version 1.7
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -43,8 +47,7 @@ public class ConnectionHandler {
     private final Set<onNetworkEventListener> onNetworkEventListeners = new HashSet<>();
     private final Set<onNetworkMessageListener> onNetworkMessageListeners = new HashSet<>();
     private SocketHandler socketHandler = null;
-    private KeyStore keyStore;
-    private KeyStore trustStore;
+    private Context context;
     private SharedPreferences sharedPreferences = null;
 
     private ConnectionHandler() {
@@ -77,27 +80,20 @@ public class ConnectionHandler {
     }
 
     /**
-     * Sets keystore to given value.
+     * Sets context to given value.
      *
-     * @param keyStore the given value
+     * @param context the given value
+     * @since 1.0
      */
-    public void setKeyStore(KeyStore keyStore) {
-        this.keyStore = keyStore;
-    }
-
-    /**
-     * Sets truststore to given value.
-     *
-     * @param trustStore the given value
-     */
-    public void setTruststore(KeyStore trustStore) {
-        this.trustStore = trustStore;
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     /**
      * Sets shared preferences to given value.
      *
      * @param sharedPreferences the given value
+     * @since 1.0
      */
     public void setSharedPreferences(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -117,8 +113,7 @@ public class ConnectionHandler {
 
         socketHandler = new SocketHandler();
         socketHandler.ip = ip;
-        socketHandler.keyStore = keyStore;
-        socketHandler.trustStore = trustStore;
+        socketHandler.context = context;
 
         addNetworkEventCallback(networkEventListener);
 
@@ -257,22 +252,13 @@ public class ConnectionHandler {
         private final Deque<Message> messageQueue = new ArrayDeque<>();
         private boolean disconnect = false;
         private String ip = null;
-        private KeyStore keyStore;
-        private KeyStore trustStore;
+        private Context context;
 
         @Override
         public void run() {
             try {
-                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                kmf.init(keyStore, "".toCharArray());
-
-                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                tmf.init(trustStore);
-
-                SSLContext ssl_ctx = SSLContext.getInstance("TLSv1");
-                ssl_ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-                SSLSocketFactory sslSocketFactory = ssl_ctx.getSocketFactory();
+                SSLContext sslContext = getSSLContext();
+                SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
                 try (SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket()) {
                     // Connect socket and optimize its settings
@@ -338,9 +324,53 @@ public class ConnectionHandler {
                     disconnect = false;
                     notifyEventListeners(NetworkEvent.DISCONNECT);
                 }
-            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException e) {
-                Log.d(TAG, "Error: " + e.getLocalizedMessage());
+            } catch (NoSuchAlgorithmException e) {
+                Log.e(TAG, "Error: " + e.getLocalizedMessage());
             }
+        }
+
+        private SSLContext getSSLContext() throws NoSuchAlgorithmException {
+            Properties properties = new Properties();
+            try {
+                properties.load(context.getResources().openRawResource(R.raw.ssl));
+
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                try {
+                    String keystorePassword = properties.getProperty("keystore.password");
+
+                    KeyStore keyStore = KeyStore.getInstance("PKCS12");
+                    keyStore.load(context.getResources().openRawResource(R.raw.keystore), keystorePassword.toCharArray());
+
+                    keyManagerFactory.init(keyStore, keystorePassword.toCharArray());
+                } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
+                    Log.e(TAG, "Could not load keystore. Error: " + e.getLocalizedMessage());
+                } catch (UnrecoverableKeyException e) {
+                    e.printStackTrace();
+                }
+
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                try {
+                    String truststorePassword = properties.getProperty("truststore.password");
+
+                    KeyStore trustStore = KeyStore.getInstance("PKCS12");
+                    trustStore.load(context.getResources().openRawResource(R.raw.truststore), truststorePassword.toCharArray());
+
+                    trustManagerFactory.init(trustStore);
+                } catch (KeyStoreException | CertificateException e) {
+                    Log.e(TAG, "Could not load truststore. Error: " + e.getLocalizedMessage());
+                }
+
+                SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+                sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+
+                return sslContext;
+            } catch (IOException e) {
+                Log.e(TAG, "Could not load SSL properties file. Error: " + e.getLocalizedMessage());
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                Log.e(TAG, "Keystore/truststore related error. Error: " + e.getLocalizedMessage());
+            }
+
+            return SSLContext.getDefault();
         }
 
         private Message getGuidMessage() {

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,17 +23,11 @@ import com.konradrej.rcpc.client.Room.DAO.ConnectionDAO;
 import com.konradrej.rcpc.client.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
 
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -42,7 +35,7 @@ import java.util.Set;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.5
+ * @version 1.6
  * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
@@ -119,39 +112,10 @@ public class ServerSelectActivity extends AppCompatActivity {
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         setContentView(view);
 
-        Properties properties = new Properties();
-        try {
-            properties.load(getResources().openRawResource(R.raw.ssl));
-
-            KeyStore keyStore = null;
-            try {
-                String keystorePassword = properties.getProperty("keystore.password");
-
-                keyStore = KeyStore.getInstance("PKCS12");
-                keyStore.load(getResources().openRawResource(R.raw.keystore), keystorePassword.toCharArray());
-            } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
-                Log.e(TAG, "Could not load keystore. Error: " + e.getLocalizedMessage());
-            }
-
-            KeyStore trustStore = null;
-            try {
-                String truststorePassword = properties.getProperty("truststore.password");
-
-                trustStore = KeyStore.getInstance("PKCS12");
-                trustStore.load(getResources().openRawResource(R.raw.truststore), truststorePassword.toCharArray());
-            } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
-                Log.e(TAG, "Could not load truststore. Error: " + e.getLocalizedMessage());
-            }
-
-            connectionHandler.setKeyStore(keyStore);
-            connectionHandler.setTruststore(trustStore);
-        } catch (IOException e) {
-            Log.e(TAG, "Could not load SSL properties file. Error: " + e.getLocalizedMessage());
-        }
-        
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nearbyServerNoContent = findViewById(R.id.nearbyServerNoContent);
         connectionHandler.setSharedPreferences(sharedPreferences);
+        connectionHandler.setContext(getBaseContext());
 
         // Start searching for services offering rcpc host and register listener
         ServiceClientHandler.setServiceListener(new ServiceListener());
