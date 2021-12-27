@@ -31,6 +31,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
     private ActivityRemoteControlBinding binding;
     private View view;
+    private boolean endRemoteControl;
 
     private final ConnectionHandler.onNetworkEventListener networkEventListener =
             new ConnectionHandler.onNetworkEventListener() {
@@ -54,13 +55,15 @@ public class RemoteControlActivity extends AppCompatActivity {
                 @Override
                 public void onError(Exception e) {
                     runOnUiThread(() -> {
-                        MaterialAlertDialogBuilder dialogBuilder =
-                                new MaterialAlertDialogBuilder(view.getContext());
+                        if(!endRemoteControl){
+                            MaterialAlertDialogBuilder dialogBuilder =
+                                    new MaterialAlertDialogBuilder(view.getContext());
 
-                        dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
-                                .setMessage(e.getLocalizedMessage())
-                                .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
-                                .show();
+                            dialogBuilder.setTitle(getString(R.string.an_error_occurred_title))
+                                    .setMessage(e.getLocalizedMessage())
+                                    .setNeutralButton(getString(R.string.neutral_response_ok), (dialog, event) -> endRemoteControl())
+                                    .show();
+                        }
                     });
                 }
             };
@@ -76,6 +79,7 @@ public class RemoteControlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityRemoteControlBinding.inflate(getLayoutInflater());
         view = binding.getRoot();
+        endRemoteControl = false;
         setContentView(view);
 
         ServiceClientHandler.stop();
@@ -181,9 +185,9 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void endRemoteControl() {
-        connectionHandler.disconnect();
+        endRemoteControl = true;
 
-        startActivity(new Intent(getApplicationContext(), ServerSelectActivity.class));
+        connectionHandler.disconnect();
         finish();
     }
 
