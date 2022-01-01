@@ -40,6 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .commit();
 
         binding.topAppBar.setNavigationOnClickListener((event) -> endSettings());
+        binding.topAppBar.setNavigationContentDescription(R.string.settings_app_bar_navigation);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

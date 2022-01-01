@@ -48,4 +48,5 @@
     <string name="an_error_occurred_title">An error occurred</string>
     <string name="user_refused_connection_title">User refused connection</string>
     <string name="user_refused_connection_body">The user declined the connection request.</string>
+    <string name="settings_app_bar_navigation">Go back to server select screen.</string>
 </resources>
