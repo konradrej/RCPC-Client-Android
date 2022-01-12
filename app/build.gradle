@@ -9,8 +9,8 @@ android {
         applicationId "com.konradrej.rcpc"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 3
+        versionName "2.0.0-alpha1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -53,6 +53,4 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
-    implementation files('libs/RCPC-Core-1.7.jar')
 }

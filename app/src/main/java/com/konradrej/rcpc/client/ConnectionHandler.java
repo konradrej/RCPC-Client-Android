@@ -5,15 +5,19 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.konradrej.rcpc.R;
-import com.konradrej.rcpc.core.network.Message;
-import com.konradrej.rcpc.core.network.MessageType;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -38,7 +42,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.7
+ * @version 2.0
  * @since 1.0
  */
 public class ConnectionHandler {
@@ -75,7 +79,7 @@ public class ConnectionHandler {
      * @param message message to send
      * @since 1.0
      */
-    public synchronized void sendMessage(Message message) {
+    public synchronized void sendMessage(JSONObject message) {
         socketHandler.messageQueue.add(message);
     }
 
@@ -208,7 +212,7 @@ public class ConnectionHandler {
         }
     }
 
-    private void notifyMessageListeners(Message message) {
+    private void notifyMessageListeners(JSONObject message) {
         for (onNetworkMessageListener onNetworkMessageListener : onNetworkMessageListeners) {
             onNetworkMessageListener.onReceivedMessage(message);
         }
@@ -245,11 +249,11 @@ public class ConnectionHandler {
      * @since 1.0
      */
     public interface onNetworkMessageListener {
-        void onReceivedMessage(Message message);
+        void onReceivedMessage(JSONObject message);
     }
 
     private class SocketHandler implements Runnable {
-        private final Deque<Message> messageQueue = new ArrayDeque<>();
+        private final Deque<JSONObject> messageQueue = new ArrayDeque<>();
         private boolean disconnect = false;
         private String ip = null;
         private Context context;
@@ -268,33 +272,37 @@ public class ConnectionHandler {
                     socket.setPerformancePreferences(0, 2, 1);
                     socket.setKeepAlive(true);
 
-                    ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-                    out.writeObject(getGuidMessage());
+                    BufferedWriter out = new BufferedWriter((new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)));
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 
-                    Message message = (Message) in.readObject();
-                    if (message.getMessageType() == MessageType.INFO_USER_ACCEPTED_CONNECTION) {
+                    JSONObject guidMessage = getGuidMessage();
+                    out.write(guidMessage.toString());
+                    out.newLine();
+                    out.flush();
+
+                    JSONObject message = new JSONObject(in.readLine());
+                    if (message.getString("type").equals("INFO_USER_ACCEPTED_CONNECTION")) {
                         notifyEventListeners(NetworkEvent.CONNECT);
 
                         new Thread(() -> {
                             try {
                                 while (!socket.isInputShutdown()) {
-                                    Message receivedMessage = (Message) in.readObject();
+                                    JSONObject receivedMessage = new JSONObject(in.readLine());
                                     notifyMessageListeners(receivedMessage);
 
-                                    switch (receivedMessage.getMessageType()) {
-                                        case ACTION_GET_UUID:
+                                    switch (message.getString("type")) {
+                                        case "ACTION_GET_UUID":
                                             messageQueue.add(getGuidMessage());
                                             break;
-                                        case INFO_USER_CLOSED_CONNECTION:
+                                        case "INFO_USER_CLOSED_CONNECTION":
                                             notifyEventListeners(NetworkEvent.DISCONNECT);
                                             break;
                                         default:
-                                            Log.e(TAG, "Message type not implemented: " + receivedMessage.getMessageType());
+                                            Log.e(TAG, "Message type not implemented: " + receivedMessage.getString("type"));
                                     }
                                 }
-                            } catch (IOException | ClassNotFoundException e) {
+                            } catch (IOException | JSONException e) {
                                 if (!disconnect) {
                                     notifyEventListeners(NetworkEvent.ERROR, e);
                                 }
@@ -303,22 +311,26 @@ public class ConnectionHandler {
 
                         while (!disconnect) {
                             if (!messageQueue.isEmpty()) {
-                                out.writeObject(messageQueue.removeFirst());
+                                out.write(messageQueue.removeFirst().toString());
+                                out.newLine();
+                                out.flush();
                             }
                         }
 
-                        Message outMessage = new Message(MessageType.INFO_USER_CLOSED_CONNECTION);
+                        JSONObject outMessage = new JSONObject();
+                        outMessage.put("type", "INFO_USER_CLOSED_CONNECTION");
 
-                        out.writeObject(outMessage);
+                        out.write(outMessage.toString());
+                        out.newLine();
                         out.flush();
-                    } else if (message.getMessageType() == MessageType.INFO_USER_CLOSED_CONNECTION) {
+                    } else if (message.getString("type").equals("INFO_USER_CLOSED_CONNECTION")) {
                         notifyEventListeners(NetworkEvent.REFUSED);
                     } else {
                         notifyEventListeners(NetworkEvent.ERROR, new Exception("Invalid message type, server or client is probably outdated."));
                     }
                 } catch (SocketTimeoutException e) {
                     notifyEventListeners(NetworkEvent.TIMEOUT);
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (IOException | JSONException e) {
                     notifyEventListeners(NetworkEvent.ERROR, e);
                 } finally {
                     disconnect = false;
@@ -373,9 +385,10 @@ public class ConnectionHandler {
             return SSLContext.getDefault();
         }
 
-        private Message getGuidMessage() {
+        private JSONObject getGuidMessage() {
             String guid;
             String guidKey = "app_instance_guid";
+            JSONObject message = new JSONObject();
 
             if (sharedPreferences.contains(guidKey)) {
                 guid = sharedPreferences.getString(guidKey, "");
@@ -384,7 +397,14 @@ public class ConnectionHandler {
                 sharedPreferences.edit().putString(guidKey, guid).apply();
             }
 
-            return new Message(MessageType.INFO_UUID, guid);
+            try {
+                message.put("type", "INFO_UUID");
+                message.put("uuid", guid);
+            } catch (JSONException e) {
+                Log.e(TAG, "An error occurred sending a UUID message. Error: " + e.getLocalizedMessage());
+            }
+
+            return message;
         }
     }
 }
