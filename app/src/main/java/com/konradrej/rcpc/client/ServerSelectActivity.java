@@ -18,10 +18,14 @@ import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.client.Network.INetworkEventListener;
+import com.konradrej.rcpc.client.Network.NetworkHandler;
 import com.konradrej.rcpc.client.Room.AppDatabase;
 import com.konradrej.rcpc.client.Room.DAO.ConnectionDAO;
 import com.konradrej.rcpc.client.Room.Entity.Connection;
 import com.konradrej.rcpc.databinding.ActivityServerSelectBinding;
+
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.HashMap;
@@ -35,21 +39,21 @@ import java.util.Set;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.6
+ * @version 2.0
  * @since 1.0
  */
 public class ServerSelectActivity extends AppCompatActivity {
     private static final String TAG = "ServerSelectActivity";
 
     private final Set<String> currentServers = new HashSet<>();
-    private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
+    private final NetworkHandler networkHandler = App.getNetworkHandler();
     private final Map<String, View> nearbyServers = new HashMap<>();
     private ActivityServerSelectBinding binding;
     private View view;
     private SharedPreferences sharedPreferences;
     private AppDatabase db;
-    private final ConnectionHandler.onNetworkEventListener networkEventListener =
-            new ConnectionHandler.onNetworkEventListener() {
+    private final INetworkEventListener networkEventListener =
+            new INetworkEventListener() {
                 @Override
                 public void onConnect() {
                     addConnectionToHistory();
@@ -74,11 +78,19 @@ public class ServerSelectActivity extends AppCompatActivity {
                 }
 
                 @Override
+                public void onSendMessage(JSONObject message) {
+                }
+
+                @Override
+                public void onReceiveMessage(JSONObject message) {
+                }
+
+                @Override
                 public void onDisconnect() {
                 }
 
                 @Override
-                public void onConnectTimeout() {
+                public void onTimeout() {
                     runOnUiThread(() -> {
                         binding.connectionStatusIndicator.hide();
 
@@ -113,8 +125,7 @@ public class ServerSelectActivity extends AppCompatActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nearbyServerNoContent = findViewById(R.id.nearbyServerNoContent);
-        connectionHandler.setSharedPreferences(sharedPreferences);
-        connectionHandler.setContext(getBaseContext());
+        networkHandler.addNetworkEventListener(networkEventListener);
 
         // Start searching for services offering rcpc host and register listener
         ServiceClientHandler.setServiceListener(new ServiceListener());
@@ -123,6 +134,38 @@ public class ServerSelectActivity extends AppCompatActivity {
         // Create/get database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RCPCStorage").build();
         populateConnectionHistory();
+
+
+
+
+        /*
+        new Thread(() -> {
+            ConnectionDAO connectionDAO = db.connectionDAO();
+
+            Connection connection = new Connection();
+            connection.ip = "192.168.1.23";
+            connection.connectTimestamp = System.currentTimeMillis();
+            connectionDAO.insert(connection);
+
+            connection.ip = "192.168.1.23";
+            connection.connectTimestamp = System.currentTimeMillis() - 2222000;
+            connectionDAO.insert(connection);
+
+            connection.ip = "192.168.1.155";
+            connection.connectTimestamp = System.currentTimeMillis()- 650000250;
+            connectionDAO.insert(connection);
+
+            connection.ip = "192.168.1.231";
+            connection.connectTimestamp = System.currentTimeMillis() -  1122255;
+            connectionDAO.insert(connection);
+
+
+            connection.ip = "192.168.0.65";
+            connection.connectTimestamp = System.currentTimeMillis()-965555000;
+            connectionDAO.insert(connection);
+        }).start();
+        */
+
 
         binding.topAppBar.setOnMenuItemClickListener((menuItem) -> {
             startActivity(new Intent(this, SettingsActivity.class));
@@ -183,7 +226,7 @@ public class ServerSelectActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         ServiceClientHandler.stop();
-        connectionHandler.removeNetworkEventCallback(networkEventListener);
+        networkHandler.removeNetworkEventListener(networkEventListener);
 
         super.onDestroy();
     }
@@ -191,7 +234,7 @@ public class ServerSelectActivity extends AppCompatActivity {
     private void connectToServer(String ip) {
         binding.connectionStatusIndicator.show();
 
-        connectionHandler.connectToServer(ip, networkEventListener);
+        networkHandler.connectTo(ip);
     }
 
     private void addConnectionToHistory() {
@@ -199,7 +242,7 @@ public class ServerSelectActivity extends AppCompatActivity {
             ConnectionDAO connectionDAO = db.connectionDAO();
 
             Connection connection = new Connection();
-            connection.ip = connectionHandler.getIP();
+            connection.ip = networkHandler.getIP();
             connection.connectTimestamp = System.currentTimeMillis();
 
             connectionDAO.insert(connection);

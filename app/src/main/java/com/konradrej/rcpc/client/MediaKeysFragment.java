@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.transition.Transition;
 
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.konradrej.rcpc.client.Network.ConnectionHandler;
+import com.konradrej.rcpc.client.Network.INetworkEventListener;
+import com.konradrej.rcpc.client.Network.NetworkHandler;
 import com.konradrej.rcpc.databinding.FragmentMediaKeysBinding;
 
 import org.json.JSONException;
@@ -26,11 +29,36 @@ import org.json.JSONObject;
  */
 public class MediaKeysFragment extends Fragment {
     private static final String TAG = "MediaKeysFragment";
-
+    private final NetworkHandler networkHandler = App.getNetworkHandler();
+    private final ConnectionHandler connectionHandler = networkHandler.getConnectionHandler();
     private FragmentMediaKeysBinding binding;
-    private final ConnectionHandler.onNetworkMessageListener networkMessageListener = new ConnectionHandler.onNetworkMessageListener() {
+    private final INetworkEventListener networkMessageListener = new INetworkEventListener() {
         @Override
-        public void onReceivedMessage(JSONObject message) {
+        public void onConnect() {
+        }
+
+        @Override
+        public void onDisconnect() {
+        }
+
+        @Override
+        public void onTimeout() {
+        }
+
+        @Override
+        public void onError(Exception e) {
+        }
+
+        @Override
+        public void onRefused() {
+        }
+
+        @Override
+        public void onSendMessage(JSONObject message) {
+        }
+
+        @Override
+        public void onReceiveMessage(JSONObject message) {
             try {
                 if (message.getString("type").equals("INFO_CURRENT_VOLUME_UPDATE")) {
                     float volume = (float) (message.getDouble("volume") * 100f);
@@ -42,7 +70,6 @@ public class MediaKeysFragment extends Fragment {
             }
         }
     };
-    private ConnectionHandler connectionHandler;
 
     /**
      * Required empty constructor.
@@ -70,16 +97,6 @@ public class MediaKeysFragment extends Fragment {
     }
 
     /**
-     * Sets socketHandler.
-     *
-     * @param connectionHandler the handler to set
-     * @since 1.0
-     */
-    public void setConnectionHandler(ConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
-    }
-
-    /**
      * Setups the fragments view and interaction.
      *
      * @param inflater           inflater to use
@@ -98,7 +115,7 @@ public class MediaKeysFragment extends Fragment {
         setupButtons();
         setupSlider();
 
-        connectionHandler.addNetworkMessageCallback(networkMessageListener);
+        networkHandler.addNetworkEventListener(networkMessageListener);
 
         sendMessage("ACTION_GET_CURRENT_VOLUME");
 
@@ -112,7 +129,7 @@ public class MediaKeysFragment extends Fragment {
      */
     @Override
     public void onDestroyView() {
-        connectionHandler.removeNetworkMessageCallback(networkMessageListener);
+        networkHandler.removeNetworkEventListener(networkMessageListener);
         super.onDestroyView();
         binding = null;
     }

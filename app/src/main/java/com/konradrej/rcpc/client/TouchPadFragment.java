@@ -13,6 +13,7 @@ import androidx.preference.PreferenceManager;
 import androidx.transition.Transition;
 
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.konradrej.rcpc.client.Network.ConnectionHandler;
 import com.konradrej.rcpc.client.View.TouchPadView;
 import com.konradrej.rcpc.databinding.FragmentTouchPadBinding;
 
@@ -29,10 +30,9 @@ import org.json.JSONObject;
  */
 public class TouchPadFragment extends Fragment {
     private static final String TAG = "TouchPadFragment";
-
+    private final ConnectionHandler connectionHandler = App.getNetworkHandler().getConnectionHandler();
     private FragmentTouchPadBinding binding;
     private SharedPreferences sharedPreferences;
-    private ConnectionHandler connectionHandler;
 
     /**
      * Required empty constructor.
@@ -59,16 +59,6 @@ public class TouchPadFragment extends Fragment {
 
         setEnterTransition(enterTransition);
         setExitTransition(exitTransition);
-    }
-
-    /**
-     * Sets socketHandler.
-     *
-     * @param connectionHandler the handler to set
-     * @since 1.0
-     */
-    public void setConnectionHandler(ConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.konradrej.rcpc.client;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +11,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.konradrej.rcpc.R;
+import com.konradrej.rcpc.client.Network.ConnectionHandler;
+import com.konradrej.rcpc.client.Network.INetworkEventListener;
+import com.konradrej.rcpc.client.Network.NetworkHandler;
 import com.konradrej.rcpc.databinding.ActivityRemoteControlBinding;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +26,20 @@ import java.util.List;
  *
  * @author Konrad Rej
  * @author www.konradrej.com
- * @version 1.3
+ * @version 2.0
  * @since 1.0
  */
 public class RemoteControlActivity extends AppCompatActivity {
 
     private final List<Fragment> fragments = new ArrayList<>();
-    private final ConnectionHandler connectionHandler = ConnectionHandler.getInstance();
+    private final NetworkHandler networkHandler = App.getNetworkHandler();
+    private final ConnectionHandler connectionHandler = networkHandler.getConnectionHandler();
     private ActivityRemoteControlBinding binding;
     private View view;
     private boolean endRemoteControl;
 
-    private final ConnectionHandler.onNetworkEventListener networkEventListener =
-            new ConnectionHandler.onNetworkEventListener() {
+    private final INetworkEventListener networkEventListener =
+            new INetworkEventListener() {
                 @Override
                 public void onConnect() {
                 }
@@ -44,18 +49,26 @@ public class RemoteControlActivity extends AppCompatActivity {
                 }
 
                 @Override
+                public void onSendMessage(JSONObject message) {
+                }
+
+                @Override
+                public void onReceiveMessage(JSONObject message) {
+                }
+
+                @Override
                 public void onDisconnect() {
                     endRemoteControl();
                 }
 
                 @Override
-                public void onConnectTimeout() {
+                public void onTimeout() {
                 }
 
                 @Override
                 public void onError(Exception e) {
                     runOnUiThread(() -> {
-                        if(!endRemoteControl){
+                        if (!endRemoteControl) {
                             MaterialAlertDialogBuilder dialogBuilder =
                                     new MaterialAlertDialogBuilder(view.getContext());
 
@@ -83,7 +96,7 @@ public class RemoteControlActivity extends AppCompatActivity {
         setContentView(view);
 
         ServiceClientHandler.stop();
-        binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), connectionHandler.getIP()));
+        binding.topAppBar.setTitle(String.format(getString(R.string.remote_control_title), networkHandler.getIP()));
 
         // Remove tab icons if in landscape
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -110,7 +123,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        connectionHandler.removeNetworkEventCallback(networkEventListener);
+        networkHandler.removeNetworkEventListener(networkEventListener);
     }
 
     /**
@@ -128,11 +141,9 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     private void setupFragments(Bundle savedInstanceState) {
         TouchPadFragment touchPadFragment = new TouchPadFragment();
-        touchPadFragment.setConnectionHandler(connectionHandler);
         fragments.add(touchPadFragment);
 
         MediaKeysFragment mediaKeysFragment = new MediaKeysFragment();
-        mediaKeysFragment.setConnectionHandler(connectionHandler);
         fragments.add(mediaKeysFragment);
 
         // Checks if fragmentIndex was saved and restores it if so
@@ -154,7 +165,7 @@ public class RemoteControlActivity extends AppCompatActivity {
     }
 
     private void setupErrorHandling() {
-        connectionHandler.addNetworkEventCallback(networkEventListener);
+        networkHandler.addNetworkEventListener(networkEventListener);
     }
 
     private void setupNavigation() {
@@ -186,7 +197,6 @@ public class RemoteControlActivity extends AppCompatActivity {
 
     private void endRemoteControl() {
         endRemoteControl = true;
-
         connectionHandler.disconnect();
         finish();
     }
